@@ -1,0 +1,49 @@
+# Monster Spawning #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+function give_Sword(p: player):
+    set {_rod} to diamond sword named "&2🗡&a🗡&f🗡 &a&lTOKEN EXTRACTOR &f🗡&a🗡&2🗡" with lore ("&8Slaying Tool", "", " &f→ &aKill the chickens at /spawn!", "", "&7ᴋɪʟʟ ᴛʜᴏsᴇ ᴄʜɪᴄᴋᴇɴs!") with all flags hidden
+    enchant {_rod} with efficiency 5
+    give {_p} 1 of {_rod}
+
+on first join:
+    set {sword::%uuid of player%} to true
+    give_Sword(player)
+
+on join:
+    if {sword::%uuid of player%} is not set:
+        set {sword::%uuid of player%} to true
+        give_Sword(player)
+
+on unload:
+    kill all chickens
+
+on load:
+    while {server::chicken} is true:
+        wait 15 seconds
+        if {chickens_spawned} < 250:
+            set {_x} to random integer between 62 and 163
+            set {_y} to 127
+            set {_z} to random number between -125 and -37
+            set {_loc} to location({_x}, {_y}, {_z}, world("SkyLand"))
+            if block below block at {_loc} = brown concrete powder or grass block:
+                block at {_loc} = air
+                spawn chicken at {_loc}
+                add 1 to {chickens_spawned}
+                set {_mob} to last spawned chicken
+                set metadata tag "tokens" of {_mob} to "%random integer between 10 and 25%"
+                set name of {_mob} to "&8[&f%fontimage "fonts:star_icon"%&e%metadata tag "tokens" of {_mob}%&8] &fChicken"
+                set byte tag "CustomNameVisible" of nbt of {_mob} to 1
+
+on damage of chicken:
+    if name of attacker's tool contains "🗡":
+        set {_token} to "%metadata tag "tokens" of victim%" parsed as number
+        add {_token} to {tokens::%uuid of attacker%}
+        remove 1 from {chickens_spawned}
+        kill victim
+        send "{@prefix} %fontimage "fonts:star_icon"%&e%{_token}% &fgained from this chicken!" to attacker
+    else:
+        cancel event
+        send "{@prefix} You can't kill this chicken with this" to attacker

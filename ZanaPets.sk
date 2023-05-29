@@ -1,0 +1,290 @@
+# ZanaPets #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+function equip_Pet(p: player):
+    if {pet::%uuid of {_p}%} is not set:
+        set {_name} to colored name of {_p}'s tool
+        if {_name} contains "&8(&cInactive&8)":
+            set {pet::%uuid of {_p}%} to {_p}'s tool
+            replace all "&8(&cInactive&8)" in {_name} with "&8(&aActive&8)"
+            set name of {_p}'s tool to {_name}
+            send "{@prefix} Successfully equipped pet!" to {_p}
+            get_Pet_Booster({_p})
+            play sound "entity.experience_orb.pickup" with pitch 0.1 to {_p}
+            make 50 of poof at {_p}
+        else:
+            send "{@prefix} This pet is already active!" to {_p}
+            play sound "entity.villager.no" with pitch 0.1 to {_p}
+
+function remove_Pet(p: player):
+    if {pet::%uuid of {_p}%} is set:
+        set {_name} to colored name of {_p}'s tool
+        if {_name} contains "&8(&aActive&8)":
+            delete {pet::%uuid of {_p}%}
+            replace all "&8(&aActive&8)" in {_name} with "&8(&cInactive&8)"
+            set name of {_p}'s tool to {_name}
+            send "{@prefix} Successfully removed pet!" to {_p}
+            play sound "entity.experience_orb.pickup" with pitch 0.1 to {_p}
+            make 50 of poof at {_p}
+            delete {pets::booster_XP::%uuid of {_p}%}
+            delete {pets::booster_money::%uuid of {_p}%}
+        else:
+            send "{@prefix} This pet is not the equipped one!" to {_p}
+            play sound "entity.villager.no" with pitch 0.1 to {_p}
+
+function register_Pet(i: integer, n: text, b: text, am: number):
+    set {-pets::%{_i}%} to {_n}
+    set {-pets::%{_i}%::booster} to {_b}
+    set {-pets::%{_i}%::amount} to {_am}
+
+function get_Pet_Booster(p: player):
+    set {_name} to uncolored name of {_p}'s tool
+    replace all "&8(&aActive&8)" in {_name} with ""
+    loop {-pets::*}:
+        if {_name} contains {-pets::%loop-index%}:
+            set {_booster_type} to {-pets::%loop-index%::booster}
+            set {_booster_amount} to {-pets::%loop-index%::amount}
+        else:
+            continue
+    set {pets::booster_%{_booster_type}%::%uuid of {_p}%} to (int tag "level" of nbt of {pet::%uuid of {_p}%})*{_booster_amount}
+    send "{@prefix} Booster type of %{_booster_type}% and multi of %((int tag "level" of nbt of {pet::%uuid of {_p}%})*{_booster_amount})+1%x was applied!" to {_p}
+
+function upgrade_Pet(p: player):
+    create a gui with virtual dropper inventory named "Pet Upgrade":
+        make gui slot (all integers between 0 and 8) with black stained glass pane named "&7" with all flags hidden
+        set {_name} to name of {_p}'s tool
+        if {_name} contains "CAT":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            if int tag "level" of nbt of {_p}'s tool = 1:
+                make gui slot 4 with {_i} named "&b&lCAT PET UPGRADE" with lore ("&8Pet Upgrade", "", " &b&l▎ &fCost: %fontimage "fonts:star_icon"%&e75,000", " &b&l▎ &fBoost Multi: &b+0.3x", "", "&b> &7Click to upgrade &b<"):
+                    if {tokens::%uuid of {_p}%} >= 75000:
+                        remove 75000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% cat_rare"
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet Upgraded to Rare!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 3:
+                make gui slot 4 with {_i} named "&5&lCAT PET UPGRADE" with lore ("&8Pet Upgrade", "", " &5&l▎ &fCost: %fontimage "fonts:star_icon"%&e150,000", " &5&l▎ &fBoost Multi: &5+0.5x", "", "&5> &7Click to upgrade &5<"):
+                    if {tokens::%uuid of {_p}%} >= 150000:
+                        remove 75000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% cat_epic"
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet Upgraded to Epic!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 5:
+                make gui slot 4 with {_i} named "&6&lCAT PET UPGRADE" with lore ("&8Pet Upgrade", "", " &6&l▎ &fCost: %fontimage "fonts:star_icon"%&e400,000", " &6&l▎ &fBoost Multi: &6+0.8x", "", "&6> &7Click to upgrade &6<"):
+                    if {tokens::%uuid of {_p}%} >= 400000:
+                        remove 400000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% cat_legendary"
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet Upgraded to Legendary!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 8:
+                make gui slot 4 with {_i} named "&d&lCAT PET UPGRADE" with lore ("&8Pet Upgrade", "", " &d&l▎ &fCost: %fontimage "fonts:star_icon"%&e700,000", " &d&l▎ &fBoost Multi: &d+1x", "", "&d> &7Click to upgrade &d<"):
+                    if {tokens::%uuid of {_p}%} >= 700000:
+                        remove 700000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% cat_mythical"
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet Upgraded to Mytical!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 10:
+                make gui slot 4 with {_i} named "&4&lCAT PET UPGRADE" with lore ("&8Pet Upgrade", "", " &4&l▎ &fCost: %fontimage "fonts:star_icon"%&e1,000,000", " &4&l▎ &fBoost Multi: &4+1.6x", "", "&4> &7Click to upgrade &4<"):
+                    if {tokens::%uuid of {_p}%} >= 1000000:
+                        remove 1000000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% cat_heroic"
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet Upgraded to Heroic!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Cat Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 13:
+                make gui slot 4 with barrier named "&c&lCAT PET UPGRADE" with lore ("&8Pet Upgrade", "", " &c&l▎ &fPet Maxed Out!", "")
+        else if {_name} contains "REGISTER":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            if int tag "level" of nbt of {_p}'s tool = 1:
+                make gui slot 4 with {_i} named "&b&lREGISTER PET UPGRADE" with lore ("&8Pet Upgrade", "", " &b&l▎ &fCost: %fontimage "fonts:star_icon"%&e100,000", " &b&l▎ &fBoost Multi: &b+0.15x", "", "&b> &7Click to upgrade &b<"):
+                    if {tokens::%uuid of {_p}%} >= 100000:
+                        remove 100000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% register_rare"
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet Upgraded to Rare!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 3:
+                make gui slot 4 with {_i} named "&5&lREGISTER PET UPGRADE" with lore ("&8Pet Upgrade", "", " &5&l▎ &fCost: %fontimage "fonts:star_icon"%&e250,000", " &5&l▎ &fBoost Multi: &5+0.25x", "", "&5> &7Click to upgrade &5<"):
+                    if {tokens::%uuid of {_p}%} >= 250000:
+                        remove 250000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% register_epic"
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet Upgraded to Epic!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 5:
+                make gui slot 4 with {_i} named "&6&lREGISTER PET UPGRADE" with lore ("&8Pet Upgrade", "", " &6&l▎ &fCost: %fontimage "fonts:star_icon"%&e500,000", " &6&l▎ &fBoost Multi: &6+0.4x", "", "&6> &7Click to upgrade &6<"):
+                    if {tokens::%uuid of {_p}%} >= 500000:
+                        remove 500000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% register_legendary"
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet Upgraded to Legendary!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 8:
+                make gui slot 4 with {_i} named "&d&lREGISTER PET UPGRADE" with lore ("&8Pet Upgrade", "", " &d&l▎ &fCost: %fontimage "fonts:star_icon"%&e800,000", " &d&l▎ &fBoost Multi: &d+0.5x", "", "&d> &7Click to upgrade &d<"):
+                    if {tokens::%uuid of {_p}%} >= 800000:
+                        remove 800000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% register_mythical"
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet Upgraded to Mythical!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 10:
+                make gui slot 4 with {_i} named "&4&lREGISTER PET UPGRADE" with lore ("&8Pet Upgrade", "", " &4&l▎ &fCost: %fontimage "fonts:star_icon"%&e1,400,000", " &4&l▎ &fBoost Multi: &4+0.75x", "", "&4> &7Click to upgrade &4<"):
+                    if {tokens::%uuid of {_p}%} >= 1400000:
+                        remove 1400000 from {tokens::%uuid of {_p}%}
+                        remove 1 of {_p}'s tool from inventory of {_p}
+                        execute console command "pet_give %{_p}% register_heroic"
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet Upgraded to Heroic!" to {_p}
+                        delete {pet::%uuid of {_p}%} if {pet::%uuid of {_p}%} is set
+                    else:
+                        close inventory of {_p}
+                        send "{@prefix} Register Pet couldn't be upgraded!" to {_p}
+            else if int tag "level" of nbt of {_p}'s tool = 15:
+                make gui slot 4 with barrier named "&c&lREGISTER PET UPGRADE" with lore ("&8Pet Upgrade", "", " &c&l▎ &fPet Maxed Out!", "")
+    open last gui to {_p}
+
+on load:
+    delete {-pets::*}
+    register_Pet(1, "CAT", "XP", 0.1)
+    register_Pet(2, "REGISTER", "MONEY", 0.05)
+
+command /pet_give [<player>] [<text>] [<integer>]:
+    permission: op
+    trigger:
+        if arg-2 is "cat_common":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 1
+            give arg-1 1 of {_i} named "&a&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &a&l▎ &fBoost Type: &aXP", " &a&l▎ &fBoost Multi: &a+0.1x", "", "&a> &7Right Click to Equip &a<")
+        else if arg-2 is "cat_rare":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 3
+            give arg-1 1 of {_i} named "&b&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &b&l▎ &fBoost Type: &bXP", " &b&l▎ &fBoost Multi: &b+0.3x", "", "&b> &7Right Click to Equip &b<")
+        else if arg-2 is "cat_epic":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 5
+            give arg-1 1 of {_i} named "&5&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &5&l▎ &fBoost Type: &5XP", " &5&l▎ &fBoost Multi: &5+0.5x", "", "&5> &7Right Click to Equip &5<")
+        else if arg-2 is "cat_legendary":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 8
+            give arg-1 1 of {_i} named "&6&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &6&l▎ &fBoost Type: &6XP", " &6&l▎ &fBoost Multi: &6+0.8x", "", "&6> &7Right Click to Equip &6<")
+        else if arg-2 is "cat_mythical":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 10
+            give arg-1 1 of {_i} named "&d&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &d&l▎ &fBoost Type: &dXP", " &d&l▎ &fBoost Multi: &d+1x", "", "&d> &7Right Click to Equip &d<")
+        else if arg-2 is "cat_heroic":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 13
+            give arg-1 1 of {_i} named "&4&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &4&l▎ &fBoost Type: &4XP", " &4&l▎ &fBoost Multi: &4+1.6x", "", "&4> &7Right Click to Equip &4<")
+        else if arg-2 is "register_common":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 1
+            give arg-1 1 of {_i} named "&a&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &a&l▎ &fBoost Type: &aMONEY", " &a&l▎ &fBoost Multi: &a+0.05x", "", "&a> &7Right Click to Equip &a<")
+        else if arg-2 is "register_rare":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 3
+            give arg-1 1 of {_i} named "&b&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &b&l▎ &fBoost Type: &bMONEY", " &b&l▎ &fBoost Multi: &b+0.15x", "", "&b> &7Right Click to Equip &b<")
+        else if arg-2 is "register_epic":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 5
+            give arg-1 1 of {_i} named "&5&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &5&l▎ &fBoost Type: &5MONEY", " &5&l▎ &fBoost Multi: &5+0.25x", "", "&5> &7Right Click to Equip &5<")
+        else if arg-2 is "register_legendary":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 8
+            give arg-1 1 of {_i} named "&6&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &6&l▎ &fBoost Type: &6MONEY", " &6&l▎ &fBoost Multi: &6+0.4x", "", "&6> &7Right Click to Equip &6<")
+        else if arg-2 is "register_mythical":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 10
+            give arg-1 1 of {_i} named "&d&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &d&l▎ &fBoost Type: &dMONEY", " &d&l▎ &fBoost Multi: &d+0.5x", "", "&d> &7Right Click to Equip &d<")
+        else if arg-2 is "register_heroic":
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            set int tag "level" of nbt of {_i} to 15
+            give arg-1 1 of {_i} named "&4&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &4&l▎ &fBoost Type: &4MONEY", " &4&l▎ &fBoost Multi: &4+0.75x", "", "&4> &7Right Click to Equip &4<")
+
+on right click with player head:
+    cancel event
+    if {pet::%uuid of player%} is not set:
+        equip_Pet(player)
+    else:
+        remove_Pet(player)
+
+command /pet_gui <player>:
+    permission: op
+    trigger:
+        set {_p} to arg-1
+        create a gui with virtual chest inventory named "Pet Claim":
+            make gui slot (all integers between 0 and 27) with black stained glass pane named "&7" with all flags hidden
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Catte\""}""},SkullOwner:{Id:[I;1392843974,-2007479821,-1444366460,-752841988],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTQ0OWNkNmI0MGUxODdlZDcyM2VlNDNmZTRlODQ5YjViMTI2ZjQyZWQ0YjkyNDRjM2RmN2Y0OWFlMWE0NmNjMSJ9fX0=""}]}}}"
+            make gui slot 12 with {_i} named "&a&lCAT PET &8(&cInactive&8)" with lore ("&8Pet", "", " &a&l▎ &fBoost Type: &aXP", " &a&l▎ &fBoost Multi: &a+0.1x", "", "&a> &7Right Click to Equip &a<", "", " &a&l▎ &fCost: %fontimage "fonts:star_icon"%&e10,000"):
+                if {tokens::%uuid of {_p}%} >= 10000:
+                    remove 10000 from {tokens::%uuid of {_p}%}
+                    execute console command "pet_give %{_p}% cat_common"
+                    close inventory of {_p}
+                    send "{@prefix} Cat Pet given!" to {_p}
+                else:
+                    close inventory of {_p}
+                    send "{@prefix} Cat Pet couldn't be given!" to {_p}
+            set {_i} to player head with nbt compound from "{display:{Name:""{\""text\"":\""Cash Register\""}""},SkullOwner:{Id:[I;-602935454,1786659741,-2049883073,-1564096448],Properties:{textures:[{Value:""eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjE4YmYzNTYwY2M4ZDA0ODI3NDA2NGNkMDE0MjI1N2Y4YjlmMTI3YmMwNDQ0ZmE1NzExOGRlMzJlODhmMzBkYSJ9fX0=""}]}}}"
+            make gui slot 14 with {_i} named "&a&lREGISTER PET &8(&cInactive&8)" with lore ("&8Pet", "", " &a&l▎ &fBoost Type: &aMONEY", " &a&l▎ &fBoost Multi: &a+0.05x", "", "&a> &7Right Click to Equip &a<", "", " &a&l▎ &fCost: %fontimage "fonts:star_icon"%&e50,000"):
+                if {tokens::%uuid of {_p}%} >= 50000:
+                    remove 50000 from {tokens::%uuid of {_p}%}
+                    execute console command "pet_give %{_p}% register_common"
+                    close inventory of {_p}
+                    send "{@prefix} Register Pet given!" to {_p}
+                else:
+                    close inventory of {_p}
+                    send "{@prefix} Register Pet couldn't be given!" to {_p}
+        open last gui to {_p}
+
+on right click on anvil:
+    cancel event
+    event-location = {pet_upgrade}
+    if name of player's tool contains "PET":
+        upgrade_Pet(player)
+    else:
+        send "{@prefix} The item you are holding is not a pet!" to player
+
+on place of player head or player wall-mounted head:
+    name of player's tool contains "PET"
+    cancel event

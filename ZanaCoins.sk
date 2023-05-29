@@ -1,0 +1,181 @@
+# coins shop #
+
+on first join:
+    set {coins::%uuid of player%} to 0 if {coins::%uuid of player%} is not set
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+command /addcoins <player> <number>:
+    permission: op
+    trigger:
+        add arg-2 to {coins::%uuid of arg-1%}
+
+command /adminmulti <text> <player> <number>:
+    permission: op
+    trigger:
+        if arg-1 is "set":
+            set {multiplier::%uuid of arg-2%} to arg-3
+        else if arg-1 is "add":
+            add arg-3 to {multiplier::%uuid of arg-2%}
+
+function coin_Shop(p: player):
+    create a gui with virtual chest inventory with 5 rows named "Coin Shop":
+        loop 22 times:
+            make next gui slot with lime glass pane named "&7" 
+            make next gui slot with white stained glass pane named "&7"
+
+        make gui slot 13 with sunflower named "&e→ Purchase Coins here! ←" with lore ("", " &f▶ &e&n%{coins::%uuid of {_p}%}% Coins", "", " &f▶ &e&nClick to buy", ""):
+            send "{@prefix} Visit the store &e&n<link:https://ZanaGens.tebex.io>here!" to {_p}
+        make gui slot 22 with glowing name tag named "&a✪ &f&lCOSMETICS &a✪" with lore ("", " &f▶ &a&nClick to view", "") with all flags hidden:
+            cosmetic_Shop({_p})
+    open last gui to {_p}
+
+function cosmetic_Shop(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Coin Shop ▶ Cosmetics":
+        loop 14 times:
+            make next gui slot with lime glass pane named "&7" 
+            make next gui slot with white stained glass pane named "&7"
+        make gui slot 11 with flower banner pattern named "&a⌛ &f&lCHAT TAGS &a⌛" with lore ("", " &f▶ &a&nClick to view", "") with all flags hidden:
+            chat_tags_Shop({_p})
+        make gui slot 13 with turtle scute named "&a☆ &f&lCHAT COLORS &a☆" with lore ("", " &f▶ &a&nClick to view", "") with all flags hidden:
+            chat_colors_Shop({_p})
+        make gui slot 15 with nether star named "&a? &f&lCOMING SOON &a?" with lore ("", " &f▶ &a&nClick to view", "") with all flags hidden
+        make gui slot 18 with barrier named "&c✘ &lBack button &c✘" with lore ("", " &f▶ &c&nClick to use&r", ""):
+            coin_Shop({_p})
+    open last gui to {_p}
+
+function chat_tags_Shop(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Coin Shop ▶ Cosmetics ▶ Tags":
+        loop 14 times:
+            make next gui slot with lime glass pane named "&7" 
+            make next gui slot with white stained glass pane named "&7"    
+        make gui slot 10 with flower banner pattern named "&8[&c&k|&c&l♡♡♡&c&k|&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.hearts"
+                execute console command "lp user %{_p}% permission set tags.hearts"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8[&c&k|&c&l♡♡♡&c&k|&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 11 with flower banner pattern named "&8[&d&k|&d&lE-Girl&d&k|&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.egirl"
+                execute console command "lp user %{_p}% permission set tags.egirl"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8[&d&k|&d&lE-Girl&d&k|&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 12 with flower banner pattern named "&8[&a&k|&a&lZANA&a&k|&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.zana"
+                execute console command "lp user %{_p}% permission set tags.zana"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8[&a&k|&a&lZANA&a&k|&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 13 with flower banner pattern named "&8[&d&k|&d&lLUNA&c&l♥&d&lZOE&d&k|&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.lunaandzoe"
+                execute console command "lp user %{_p}% permission set tags.lunaandzoe"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8[&d&k|&d&lLUNA&c❤&d&lZOE&d&k|&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 14 with flower banner pattern named "&8[&3&k|&b&lMINEHUT&3&k|&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.minehut"
+                execute console command "lp user %{_p}% permission set tags.minehut"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8[&3&k|&b&lMINEHUT&3&k|&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 15 with flower banner pattern named "&8[&f&lW&a&oe&e&ni&d&lr&4&od&2&no&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.weirdo"
+                execute console command "lp user %{_p}% permission set tags.weirdo"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8&8[&f&lW&a&oe&e&ni&d&lr&4&od&2&no&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 16 with flower banner pattern named "&8[&a&k|&2&lP&f&l2&2&lW&a&k|&8] &fChat Tag" with lore ("&8Tag", "", " &f▶ &aGrants access to this", " &f▶ &atag in /tags!", "", " &f▶ &eCosts &6⛃&e300", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 300:
+                {_p} does not have permission "tags.p2w"
+                execute console command "lp user %{_p}% permission set tags.p2w"
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &8[&a&k|&2&lP&f&l2&2&lW&a&k|&8] &fChat Tag&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+                remove 300 from {coins::%uuid of {_p}%}
+        make gui slot 18 with barrier named "&c✘ &lBack button &c✘" with lore ("", " &f▶ &c&nClick to use&r", ""):
+            coin_Shop({_p})
+    open last gui to {_p}
+        
+function chat_colors_Shop(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Coin Shop ▶ Cosmetics ▶ Colors":
+        loop 14 times:
+            make next gui slot with lime glass pane named "&7" 
+            make next gui slot with white stained glass pane named "&7"  
+        make gui slot 10 with white dye named "&f☠ &f&lWHITE CHATCOLOR &f☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.white"
+                execute console command "lp user %{_p}% permission set chatcolor.white"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &f&lWHITE CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 11 with orange dye named "&6☠ &6&lORANGE CHATCOLOR &6☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.orange"
+                execute console command "lp user %{_p}% permission set chatcolor.orange"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &6&lORANGE CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 12 with light blue dye named "&b☠ &b&lAQUA CHATCOLOR &b☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.aqua"
+                execute console command "lp user %{_p}% permission set chatcolor.aqua"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &b&lAQUA CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 13 with red dye named "&c☠ &c&lRED CHATCOLOR &c☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.red"
+                execute console command "lp user %{_p}% permission set chatcolor.red"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &c&lRED CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 14 with pink dye named "&d☠ &d&lPINK CHATCOLOR &d☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.pink"
+                execute console command "lp user %{_p}% permission set chatcolor.pink"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &d&lPINK CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 15 with purple dye named "&5☠ &5&lPURPLE CHATCOLOR &5☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.purple"
+                execute console command "lp user %{_p}% permission set chatcolor.purple"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &5&lPURPLE CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 16 with lime dye named "&a☠ &a&lLIME CHATCOLOR &a☠" with lore ("&8Chat Color", "", " &f▶ &aGrants access to this", " &f▶ &acolor in /chatcolor!", "", " &f▶ &eCosts &6⛃&e200", "") with all flags hidden:
+            if {coins::%uuid of {_p}%} >= 200:
+                {_p} does not have permission "chatcolor.lime"
+                execute console command "lp user %{_p}% permission set chatcolor.lime"
+                remove 200 from {coins::%uuid of {_p}%}
+                broadcast "", "{@prefix} &a&l%{_p}% &fhas bought &a&lLIME CHATCOLOR&f from /store!", "&7&oGG's in the chat!", ""
+                
+                play sound "block.note_block.bit" with volume 3 to all players
+        make gui slot 18 with barrier named "&c✘ &lBack button &c✘" with lore ("", " &f▶ &c&nClick to use&r", ""):
+            coin_Shop({_p})
+    open last gui to {_p}
+
+command /store:
+    aliases: /coins, /coinshop, /cshop
+    trigger:
+        coin_Shop(player)                

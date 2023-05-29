@@ -1,0 +1,212 @@
+# Shop #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+on load:
+	delete {shop::*}
+#shop type (misc or blocks) item, price, name
+	registerShop("misc", diamond shovel, 2500, "Diamond Shovel")
+	registerShop("misc", diamond pickaxe, 2500, "Diamond Pickaxe")
+	registerShop("misc", diamond axe, 2500, "Diamond Axe")
+	registerShop("misc", diamond hoe, 2500, "Diamond Hoe")
+	registerShop("misc", netherite shovel, 5000, "Netherite Shovel")
+	registerShop("misc", netherite pickaxe, 5000, "Netherite Pickaxe")
+	registerShop("misc", netherite axe, 5000, "Netherite Axe")
+	registerShop("misc", netherite hoe, 5000, "Netherite Hoe")
+	registerShop("misc", water bucket, 50, "Water Bucket")
+	registerShop("misc", hopper, 2500, "Hopper")
+	registerShop("misc", chest, 250, "Chest")
+	registerShop("misc", item frame, 250, "Item Frame")
+	
+	registerShop("blocks", cobblestone, 40, "Cobblestone")
+	registerShop("blocks", dark prismarine block, 40, "Dark Prismarine")
+	registerShop("blocks", stone, 80, "Stone")
+	registerShop("blocks", grass, 80, "Grass")
+	registerShop("blocks", sand, 80, "Sand")
+	registerShop("blocks", packed ice, 80, "Packed Ice")
+	registerShop("blocks", ice, 80, "Ice")
+	registerShop("blocks", dirt, 80, "Dirt")
+	registerShop("blocks", farmland, 80, "Farmland")
+	registerShop("blocks", oak log, 160, "Oak Log")
+	registerShop("blocks", spruce log, 160, "Spruce Log")
+	registerShop("blocks", birch log, 160, "Birch Log")
+	registerShop("blocks", jungle log, 160, "Jungle Log")
+	registerShop("blocks", acacia log, 160, "Acacia Log")
+	registerShop("blocks", dark oak log, 160, "Dark Oak Log")
+	registerShop("blocks", oak planks, 40, "Oak Planks")
+	registerShop("blocks", spruce planks, 40, "Spruce Planks")
+	registerShop("blocks", birch planks, 40, "Birch Planks")
+	registerShop("blocks", jungle planks, 40, "Jungle Planks")
+	registerShop("blocks", acacia planks, 40, "Acacia Planks")
+	registerShop("blocks", dark oak planks, 40, "Dark Oak Planks")
+	registerShop("blocks", oak leaves, 80, "Oak Leaves")
+	registerShop("blocks", spruce leaves, 80, "Spruce Leaves")
+	registerShop("blocks", birch leaves, 80, "Birch Leaves")
+	registerShop("blocks", jungle leaves, 80, "Jungle Leaves")
+	registerShop("blocks", acacia leaves, 80, "Acacia Leaves")
+	registerShop("blocks", dark oak leaves, 80, "Dark Oak Leaves")
+	registerShop("blocks", azalea leaves, 80, "Azalea Leaves")
+	registerShop("blocks", glass, 80, "Glass")
+	registerShop("blocks", white wool, 80, "White Wool")
+	registerShop("blocks", red wool, 80, "Red Wool")
+	registerShop("blocks", black wool, 80, "Black Wool")
+	registerShop("blocks", brown wool, 80, "Brown Wool")
+	registerShop("blocks", lime wool, 80, "Lime Wool")
+	registerShop("blocks", green wool, 80, "Green Wool")
+	registerShop("blocks", cyan wool, 80, "Cyan Wool")
+	registerShop("blocks", light blue wool, 80, "Light Blue Wool")
+	registerShop("blocks", pink wool, 80, "Pink Wool")
+	registerShop("blocks", gray wool, 80, "Gray Wool")
+	registerShop("blocks", magenta wool, 80, "Magenta Wool")
+	registerShop("blocks", purple wool, 80, "Purple Wool")
+	registerShop("blocks", white concrete powder, 80, "White Concrete Powder")
+	registerShop("blocks", red concrete powder, 80, "Red Concrete Powder")
+	registerShop("blocks", black concrete powder, 80, "Black Concrete Powder")
+	registerShop("blocks", brown concrete powder, 80, "Brown Concrete Powder")
+	registerShop("blocks", lime concrete powder, 80, "Lime Concrete Powder")
+	registerShop("blocks", green concrete powder, 80, "Green Concrete Powder")
+	registerShop("blocks", light blue concrete powder, 80, "Light Blue Concrete Powder")
+	registerShop("blocks", pink concrete powder, 80, "Pink Concrete Powder")
+	registerShop("blocks", gray concrete powder, 80, "Gray Concrete Powder")
+	registerShop("blocks", purple concrete powder, 80, "Purple Concrete Powder")
+	registerShop("blocks", white stained glass, 80, "White Stained Glass")
+	registerShop("blocks", magenta stained glass, 80, "Magenta Stained Glass")
+	registerShop("blocks", light blue stained glass, 80, "Light Blue Stained Glass")
+	registerShop("blocks", yellow stained glass, 80, "Yellow Stained Glass")
+	registerShop("blocks", lime stained glass, 80, "Lime Stained Glass")
+	registerShop("blocks", pink stained glass, 80, "Pink Stained Glass")
+	registerShop("blocks", light gray stained glass, 80, "Light Gray Stained Glass")
+	registerShop("blocks", cyan stained glass, 80, "Cyan Stained Glass")
+	registerShop("blocks", purple stained glass, 80, "Purple Stained Glass")
+	registerShop("blocks", brown stained glass, 80, "Brown Stained Glass")
+	registerShop("blocks", green stained glass, 80, "Green Stained Glass")
+	registerShop("blocks", red stained glass, 80, "Red Stained Glass")
+	registerShop("blocks", black stained glass, 80, "Black Stained Glass")
+	registerShop("blocks", ladder, 40, "Ladder")
+	registerShop("blocks", soul sand, 80, "Soul Sand")
+	registerShop("blocks", magma block, 80, "Magma Block")
+	registerShop("blocks", glowstone, 80, "Glowstone")
+
+# HARD CODE DO NOT TOUCH #
+
+function registerShop(shop: text, item: item, price: integer, name: text):
+    add ("%{_item}%,%{_price}%,%{_name}%") to {shop::%{_shop}%::*}
+
+command /shop:
+    trigger:
+        mainShop(player)
+
+function mainShop(p: player):
+    create a gui with virtual chest inventory named "Shop Menu":
+        make gui slot (all integers between 0 and 26) with black stained glass pane named "&7" with all flags hidden
+        
+        make gui slot 11 with grass block named "<##1fff5e>Block Shop" with lore ("", "<##1fff5e>▶ &fClick to open", ""):
+            blockShop({_p})
+        
+        make gui slot 13 with white wool named "<##1fff5e>Gen Shop" with lore ("", "<##1fff5e>▶ &fClick to open", ""):
+            farmShop({_p})
+        
+        make gui slot 15 with diamond pickaxe named "<##1fff5e>Miscellaneous Shop" with lore ("", "<##1fff5e>▶ &fClick to open", "") with all flags hidden:
+            miscShop({_p})
+
+        make gui slot 26 with barrier named "<##1fff5e>Close Shop" with lore ("", "<##1fff5e>▶ &fClick to close", ""):
+            close inventory of {_p}
+    open last gui to {_p}
+
+function blockShop(p: player, page: number = 1):
+    create a gui with virtual chest inventory with 5 rows named "Shop > Blocks":
+        make gui slot (integers between 0 and 44) to stone button named "&7"
+        make gui slot 0,2,4,6,8,18,26,36,38,40,42 and 44 to black stained glass pane named "&7"
+        make gui slot 1,3,5,7,9,17,27,35,37,39,41 and 43 to gray stained glass pane named "&7"
+        set {_minLoop} to (21*{_page})-21
+        set {_loops} to 0
+        set {_slot} to 10
+        loop {shop::blocks::*}:
+            if {_loops} >= {_minLoop}:
+                set {_split::*} to loop-value split at ","
+                make gui slot {_slot} to ({_split::1} parsed as item) named "<##1fff5e>%{_split::3}%" with lore ("", "<##1fff5e>▶ &fCost: &2$&a%format({_split::2} parsed as a number)%", "") with all flags hidden:
+                    if {balance::%uuid of {_p}%} ? 0 is less than ({_split::2} parsed as a number):
+                        send "{@prefix} &fYou <##1fff5e>&ncan't&r afford this!" to {_p}
+                    else:
+                        give player 16 of ({_split::1} parsed as item)
+                        remove ({_split::2} parsed as a number) from {balance::%uuid of {_p}%}
+                add 1 to {_slot}
+                if {_slot} is 17 or 26:
+                    add 2 to {_slot}
+                if {_slot} is 35:
+                    exit loop
+            add 1 to {_loops}
+        set {_amount} to (amount of {shop::blocks::*})+1
+        set {_amount} to {_amount}/21
+        set {_amount} to ceil({_amount})
+        if {_amount} is greater than 1:
+            make gui slot 39 to arrow named "&fPrevious Page" with lore ("", "<##1fff5e>▶ &fClick to scroll", "") with all flags hidden:
+                blockShop({_p}, ({_page} - 1))
+                play sound "ui.toast.out" to {_p}
+            if {_page} = 1:
+                make gui slot 39 to red dye named "<##1fff5e>No pages" with lore ("", "<##1fff5e>▶ &fThere are no more pages", "") with all flags hidden
+            make gui slot 41 to arrow named "&fNext Page" with lore ("", "<##1fff5e>▶ &fClick to scroll", "") with all flags hidden:
+                blockShop({_p}, ({_page} + 1))
+                play sound "ui.toast.out" to {_p}
+            if {_page} is {_amount}:
+                make gui slot 41 to red dye named "<##1fff5e>No pages" with lore ("", "<##1fff5e>▶ &fThere are no more pages", "") with all flags hidden
+        make gui slot 40 with barrier named "<##1fff5e>Back" with lore ("", "<##1fff5e>▶ &fClick to open main menu", ""):
+            mainShop({_p})
+    open last gui to {_p}
+
+function miscShop(p: player, page: number = 1):
+    create a gui with virtual chest inventory with 5 rows named "Shop > Misc":
+        make gui slot (integers between 0 and 44) to stone button named "&7"
+        make gui slot 0,2,4,6,8,18,26,36,38,40,42 and 44 to black stained glass pane named "&7"
+        make gui slot 1,3,5,7,9,17,27,35,37,39,41 and 43 to gray stained glass pane named "&7"
+        set {_minLoop} to (21*{_page})-21
+        set {_loops} to 0
+        set {_slot} to 10
+        loop {shop::misc::*}:
+            if {_loops} >= {_minLoop}:
+                set {_split::*} to loop-value split at ","
+                make gui slot {_slot} to ({_split::1} parsed as item) named "<##1fff5e>%{_split::3}%" with lore ("", "<##1fff5e>▶ &fCost: &2$&a%format({_split::2} parsed as a number)%", "") with all flags hidden:
+                    if {balance::%uuid of {_p}%} ? 0 is less than ({_split::2} parsed as a number):
+                        send "{@prefix} &fYou <##1fff5e>&ncan't&r afford this!" to {_p}
+                    else:
+                        give player 1 of ({_split::1} parsed as item)
+                        remove ({_split::2} parsed as a number) from {balance::%uuid of {_p}%}
+                add 1 to {_slot}
+                if {_slot} is 17 or 26:
+                    add 2 to {_slot}
+                if {_slot} is 35:
+                    exit loop
+            add 1 to {_loops}
+        set {_amount} to (amount of {shop::misc::*})+1
+        set {_amount} to {_amount}/21
+        set {_amount} to ceil({_amount})
+        if {_amount} is greater than 1:
+            make gui slot 39 to arrow named "&fNext Page" with lore ("", "<##1fff5e>▶ &fClick to scroll", "") with all flags hidden:
+                miscShop({_p}, ({_page} - 1))
+                play sound "ui.toast.out" to {_p}
+            if {_page} = 1:
+                make gui slot 39 to red dye named "<##1fff5e>No pages" with lore ("", "<##1fff5e>▶ &fThere are no more pages", "") with all flags hidden
+            make gui slot 41 to arrow named "&fNext Page" with lore ("", "<##1fff5e>▶ &fClick to scroll", "") with all flags hidden:
+                miscShop({_p}, ({_page} + 1))
+                play sound "ui.toast.out" to {_p}
+            if {_page} is {_amount}:
+                make gui slot 41 to red dye named "<##1fff5e>No pages" with lore ("", "<##1fff5e>▶ &fThere are no more pages", "") with all flags hidden
+        make gui slot 40 with barrier named "<##1fff5e>Back" with lore ("", "<##1fff5e>▶ &fClick to open main menu", ""):
+            mainShop({_p})
+    open last gui to {_p}
+
+function farmShop(p: player, page: number = 1):
+    create a gui with virtual chest inventory with 5 rows named "Shop > Gens":
+        make gui slot (integers between 0 and 44) to stone button named "&7"
+        make gui slot 0,2,4,6,8,18,26,36,38,40,42 and 44 to black stained glass pane named "&7"
+        make gui slot 1,3,5,7,9,17,27,35,37,39,41 and 43 to gray stained glass pane named "&7"
+        make gui slot 10 with white terracotta named "&f&lWHITE &fGenerator" with lore ("", " <##1fff5e>▶ &fCost: &2$&a500", ""):
+            if {balance::%uuid of {_p}%} >= 500:
+                execute console command "givegen %{_p}% 1 1"
+                remove 500 from {balance::%uuid of {_p}%}
+            else:
+                close inventory of {_p}
+        make gui slot 40 with barrier named "<##1fff5e>Back" with lore ("", "<##1fff5e>▶ &fClick to open main menu", ""):
+            mainShop({_p})
+    open last gui to {_p}

@@ -1,0 +1,121 @@
+# sell #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+#----------------------------------------#
+#                                        #
+#               Functions                #
+#                                        #
+#----------------------------------------#
+
+function registerSellItem(id: itemtype, price: number):
+    add {_id} to {-sell::item_list::*}
+    add {_price} to {-sell::price_list::*}
+
+#----------------------------------------#
+#                                        #
+#                Events                  #
+#                                        #
+#----------------------------------------#
+
+on load:
+    delete {-sell::*}
+    registerSellItem(white dye, 10)
+    registerSellItem(gray dye, 15)
+    registerSellItem(black dye, 25)
+    registerSellItem(brown dye, 35)
+    registerSellItem(red dye, 50)
+    registerSellItem(orange dye, 75)
+    registerSellItem(yellow dye, 100)
+    registerSellItem(lime dye, 120)
+    registerSellItem(green dye, 150)
+    registerSellItem(cyan dye, 175)
+    registerSellItem(light blue dye, 200)
+    registerSellItem(blue dye, 210)
+    registerSellItem(purple dye, 220)
+    registerSellItem(magenta dye, 230)
+    registerSellItem(pink dye, 240)
+    registerSellItem(white candle, 250)
+    registerSellItem(gray candle, 260)
+    registerSellItem(black candle, 270)
+    registerSellItem(brown candle, 280)
+    registerSellItem(red candle, 290)
+    registerSellItem(orange candle, 300)
+    registerSellItem(yellow candle, 310)
+    registerSellItem(lime candle, 320)
+    registerSellItem(green candle, 330)
+    registerSellItem(cyan candle, 340)
+    registerSellItem(light blue candle, 350)
+    registerSellItem(blue candle, 360)
+    registerSellItem(purple candle, 370)
+
+function check_Levels(p: player):
+    if {leveling::exp::%uuid of {_p}%}+0 >= ({leveling::needed_xp::%uuid of {_p}%}):
+        add 50 to {leveling::needed_xp::%uuid of {_p}%}
+        set {leveling::exp::%uuid of {_p}%} to 0
+        send title "&2☝&a☝&f☝ LEVEL-UP! &f☝&a☝&2☝" with subtitle "%fontimage "fonts:falling_money_icon"%&c%{leveling::level::%uuid of {_p}%}+0% &7to %fontimage "fonts:falling_money_icon"%&a%{leveling::level::%uuid of {_p}%}+1%" to {_p}
+        add 1 to {leveling::level::%uuid of {_p}%}
+        if mod({leveling::level::%uuid of {_p}%}, 25) = 0:
+            add 1 to {-gen::placed::%{_p}%}
+        play sound "ui.toast.challenge_complete" with volume 0.5 to {_p}
+    else:
+        set {_needed_xp} to {leveling::needed_xp::%uuid of {_p}%}
+        set {_xp} to {leveling::exp::%uuid of {_p}%}+0
+        send action bar "&8[ &a%{_xp}%&7/&a%{_needed_xp}% &8]" to {_p}
+
+function progress_Bar(int: number, max: number, barsize: integer) :: string:
+	loop {_barsize} times:
+		set {_bar} to "%{_bar} ? ""%▮"
+	return "&a%((first floor({_barsize} * ({_int}/{_max})) characters of {_bar}) ? "")%&c%(last {_barsize} - floor({_barsize} * ({_int}/{_max})) characters of {_bar}) ? ""%"
+
+on right click on chest or hopper with blaze rod:
+    cancel event
+    set {_wand} to "%uncolored name of player's tool%"
+    replace all "Sellwand " and "x " and "▶ " and "◀" in {_wand} with ""
+    set {_multi} to {_wand} parsed as a number
+    set {_money} to 0
+    set {_pmulti} to ({multiplier::%uuid of player%}+1)*({pets::booster_MONEY::%uuid of player%}+1)
+    loop {-sell::item_list::*}:
+        set {_amount} to amount of loop-value in event-block's inventory
+        remove all loop-value from event-block's inventory
+        add (({_amount} * {_pmulti} *{_multi}) * {-sell::price_list::%loop-index%}) to {_money}
+    if {_money} > 0:
+        add ({_money} * {booster_money}) to {balance::%uuid of player%}
+        add ({_money}/1000) to {leveling::exp::%uuid of player%}
+        check_Levels(player)
+        play sound "block.note_block.bell" to player
+        send "{@prefix} &fSold items for &2$&a%format(({_money} * {booster_money}))%"
+    else:
+        send "{@prefix} &fThis block was empty!" to player
+        play sound "entity.villager.no" to player
+
+on place of lightning rod:
+    cancel event
+
+#----------------------------------------#
+#                                        #
+#               Commands                 #
+#                                        #
+#----------------------------------------#
+
+command /sell:
+    trigger:
+        set {_multi} to ({multiplier::%uuid of player%} + 1)*({pets::booster_MONEY::%uuid of player%}+1)
+        set {_money} to 0
+        loop {-sell::item_list::*}:
+            set {_amount} to amount of loop-value in player's inventory
+            remove all loop-value from player's inventory
+            add ({_amount} * {-sell::price_list::%loop-index%}) * ({_multi}) to {_money}
+        {_money} > 0
+        add ({_money} * {booster_money}) to {balance::%uuid of player%}
+        add ({_money}/1000) to {leveling::exp::%uuid of player%}
+        check_Levels(player)
+        play sound "block.note_block.bell" to player
+        send "{@prefix} &fSold items for &2$&a%format(({_money} * {booster_money}))%"
+
+command /sellwandgive <player> <number>:
+    permission: op
+    trigger:
+        set {_wand} to blaze rod named "<##1fff5e>&l▶ &f&nSellwand %arg-2%x&r <##1fff5e>&l◀" with lore "&8Sell Item", "", " <##1fff5e>✽ &fSell chests and hoppers", " <##1fff5e>✽ &fcontents with a <##1fff5e>%arg-2%x &fmulti", ""
+        give arg-1 1 of {_wand}

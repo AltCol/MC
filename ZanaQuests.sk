@@ -1,0 +1,156 @@
+# quests #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+on first join:
+    set {quest::current::%uuid of player%} to "Talk to Airi in the mines"
+
+command /quests:
+    aliases: /queststart, /quest
+    trigger:
+        if {quest::current::%uuid of player%} is "Talk to Airi in the mines":
+            teleport player to {mine}
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Click to NPC on the left to continue!", "" to player
+        else if {quest::current::%uuid of player%} is "Talk to the Miner":
+            teleport player to {mine}
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Click to NPC on the right to continue!", "" to player
+        else if {quest::current::%uuid of player%} is "Mine 5 coal and 3 diamonds":
+            teleport player to {mine}
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Mine 5 coal and 3 diamonds to continue!", "" to player
+        else if {quest::current::%uuid of player%} is "Talk to the London":
+            teleport player to {farm}
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Talk to London to continue!", "" to player
+        else if {quest::current::%uuid of player%} is "Get London 128 wheat":
+            teleport player to {farm}
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Farm 128 wheat to continue!", "" to player
+        else if {quest::current::%uuid of player%} is "Buy and place a gen!":
+            execute player command "/p home"
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Buy a new generator from /shop and place it!", "" to player
+        else if {quest::current::%uuid of player%} is "Sell your items":
+            execute player command "/p home"
+            send "", "&8[&a&lQUEST&8]", "&f☞ Here is where you left off! Collect generator drops and do /sell!", "" to player
+        else if {quest::current::%uuid of player%} is not set:
+            send "", "&8[&a&lQUEST&8]", "&f☞ You have finished all the quests!", "" to player
+
+on chat:
+    if "%message%" contains "quests" and ("where" or "how"):
+        cancel event
+        execute player command "/quests"
+    else if "%message%" contains "how" and "hoe":
+        cancel event
+        execute player command "/quests"
+    else if "%message%" contains "how" and "pickaxe":
+        cancel event
+        execute player command "/quests"
+
+command /miner <player>:
+    permission: op
+    trigger:
+        if {quest::current_name::%uuid of arg-1%} is "Beginnings":
+            if {quest::current::%uuid of arg-1%} is "Talk to the Miner":
+                send "&a&lMINER &8▶ &fHeyo %arg-1%! I am the manager of this mine." to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send "&a&lMINER &8▶ &fHere is a pickaxe to help you explore and have fun!" to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                give_Pick(arg-1)
+                wait 3 seconds
+                send "&a&lMINER &8▶ &fCan you collect 5 coal and 3 diamonds for me?" to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send title "&a&lOBJECTIVE UPDATED" with subtitle "&fCollect the miner's goods" to arg-1
+                play sound "entity.experience_orb.pickup" with volume 1 to arg-1
+                set {quest::current::%uuid of arg-1%} to "Mine 5 coal and 3 diamonds"
+            else if {quest::current::%uuid of arg-1%} is "Give the 5 coal and 3 diamonds":
+                play sound "ui.toast.challenge_complete" with volume 1 to arg-1
+                remove all diamond from inventory of arg-1
+                remove all coal from inventory of arg-1
+                send title "&a&lQUEST COMPLETE" with subtitle "&fTalk to London at the barn!" to arg-1
+                send "", "{@prefix} Quest Completed!", " &f| &e10 Coins &7&o/store", " &f| &a5 Gen Slots", "" to arg-1
+                add 5 to {-gen::placed::%arg-1%}
+                add 10 to {coins::%uuid of arg-1%} 
+                set {quest::current::%uuid of arg-1%} to "Talk to the London"  
+                teleport player to {farm}  
+
+command /airi <player>:
+    permission: op
+    trigger:
+        if {quest::current_name::%uuid of arg-1%} is "Beginnings":
+            if {quest::current::%uuid of arg-1%} ? "Talk to Airi in the mines" is "Talk to Airi in the mines":
+                send "&a&lAIRI &8▶ &fHello %arg-1% and welcome to &8[&a&lZANAGENS&8]&f!" to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send "&a&lAIRI &8▶ &fYou will begin your journey by getting a Pickaxe from my friend, the miner!" to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send "&a&lAIRI &8▶ &fHe's right over to your right, go ahead and chat with him!" to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send title "&a&lOBJECTIVE UPDATED" with subtitle "&fTalk to the Miner" to arg-1
+                play sound "entity.experience_orb.pickup" with volume 1 to arg-1
+                set {quest::current::%uuid of arg-1%} to "Talk to the Miner"
+
+command /london <player>:
+    permission: op
+    trigger:
+        if {quest::current_name::%uuid of arg-1%} is "Beginnings":
+            if {quest::current::%uuid of arg-1%} is "Talk to the London":
+                set {quest::current::%uuid of arg-1%} to "Get London 128 wheat"
+                send "&a&lLONDON &8▶ &fHey %arg-1%! My name is London and I run this farm!" to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send "&a&lLONDON &8▶ &fHere is a hoe to get started here." to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send "&a&lLONDON &8▶ &fCan you gather 128 wheat for me? I need it for bread." to arg-1
+                give_Hoe(arg-1)
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds
+                send title "&a&lOBJECTIVE UPDATED" with subtitle "&fGet London 128 wheat" to arg-1
+                play sound "entity.experience_orb.pickup" with volume 1 to arg-1
+            if {quest::current::%uuid of arg-1%} is "Return London her wheat":   
+                send "&a&lLONDON &8▶ &fYou are back already?!?! Wow..." to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds  
+                send "&a&lLONDON &8▶ &fYou have the skills to pay the bills." to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                wait 3 seconds       
+                send "&a&lLONDON &8▶ &fThank you so much for the wheat! I will reward you now..." to arg-1
+                play sound "entity.villager.ambient" with volume 1 to arg-1
+                remove all wheat from inventory of arg-1
+                wait 3 seconds  
+                play sound "ui.toast.challenge_complete" with volume 1 to arg-1
+                send title "&a&lQUEST COMPLETE" with subtitle "&fYou have unlocked plots!" to arg-1
+                send "", "{@prefix} Quest Completed!", " &f| &e10 Coins &7&o/store", " &f| &a5 Gen Slots", "" to arg-1
+                add 5 to {-gen::placed::%arg-1%}
+                add 10 to {coins::%uuid of arg-1%} 
+                set {quest::current::%uuid of arg-1%} to "Tutorial Complete"
+                wait 3 seconds
+                send title "&a&lCREATING A PLOT NOW!" with subtitle "&7&oTeleporting shortly..." to arg-1
+                execute player command "/plot home"   
+                set {quest::current_name::%uuid of arg-1%} to "Gen Basics"
+                set {quest::current::%uuid of arg-1%} to "Buy and place a gen!"
+                send title "&a&lQUEST UPDATED" with subtitle "&fGo to /shop and buy a gen!" to arg-1
+                add 500 to {balance::%uuid of arg-1%}
+
+on place of white stained hardened clay:
+    wait 1 second
+    event is not canceled
+    if {quest::current_name::%uuid of player%} is "Gen Basics":
+        if {quest::current::%uuid of player%} is "Buy and place a gen!":
+            play sound "ui.toast.challenge_complete" with volume 1 to player
+            send title "&a&lQUEST COMPLETE" with subtitle "&fNow sell the items!" to player
+            send "", "{@prefix} Quest Completed!", " &f| &e10 Coins &7&o/store", " &f| &a5 Gen Slots", "" to player
+            add 5 to {-gen::placed::%player%}
+            add 10 to {coins::%uuid of player%}  
+            set {quest::current::%uuid of player%} to "Sell your items"
+
+on command "/sell":
+    if {quest::current::%uuid of event-player%} is "Sell your items":
+        send title "&a&lTUTORIAL COMPLETE" with subtitle "&fEnjoy the server!" to event-player
+        delete {quest::current::%uuid of event-player%}
+        delete {quest::current_name::%uuid of event-player%}
+        send "", "{@prefix} Tutorial Completed!", " &f| &e20 Coins &7&o/store", " &f| &a10 Gen Slots", "" to event-player
+        add 10 to {-gen::placed::%event-player%}
+        add 20 to {coins::%uuid of event-player%}  

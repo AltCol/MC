@@ -1,0 +1,64 @@
+# ZanaEvents #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f 
+
+function get_Random_Event():
+    set {_i} to (random integer between 1 and 3)
+    if {_i} = 1:
+        set {_booster_amount} to (random integer between 1 and 3)
+        add {_booster_amount} to {booster_tokens}
+        set {_bar} to boss bar named "event" with title "&8[&a&lEVENTS&8] &7▪ &f%{_booster_amount}+1%x Token Booster" with color lime with progress 100
+        set bossbar players of {_bar} to all players
+        broadcast "", "{@prefix} A new event has started!", " &f☞ %{_booster_amount}+1%x Token Booster is live!", "&7&oEnds in 15 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 10 minutes
+        broadcast "", "{@prefix} Event Reminder!", " &f☞ %{_booster_amount}+1%x Token Booster is live!", "&7&oEnds in 5 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 4 minutes
+        broadcast "", "{@prefix} Event Reminder!", " &f☞ %{_booster_amount}+1%x Token Booster is live!", "&7&oEnds in 1 minute!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 1 minute
+        broadcast "", "{@prefix} Event Over!", " &f☞ %{_booster_amount}+1%x Token Booster event has concluded!", "&7&oCome back in 45 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        remove {_booster_amount} from {booster_tokens}
+        delete bossbar named "event"
+    else if {_i} = 2:
+        set {_booster_amount} to (random integer between 1 and 3)
+        add {_booster_amount} to {booster_exp}
+        set {_bar} to boss bar named "event" with title "&8[&a&lEVENTS&8] &7▪ &f%{_booster_amount}+1%x EXP Booster" with color lime with progress 100
+        set bossbar players of {_bar} to all players
+        broadcast "", "{@prefix} A new event has started!", " &f☞ %{_booster_amount}+1%x EXP Booster is live!", "&7&oEnds in 15 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 10 minutes
+        broadcast "", "{@prefix} Event Reminder!", " &f☞ %{_booster_amount}+1%x EXP Booster is live!", "&7&oEnds in 5 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 4 minutes
+        broadcast "", "{@prefix} Event Reminder!", " &f☞ %{_booster_amount}+1%x EXP Booster is live!", "&7&oEnds in 1 minute!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 1 minute
+        broadcast "", "{@prefix} Event Over!", " &f☞ %{_booster_amount}+1%x EXP Booster event has concluded!", "&7&oCome back in 45 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        remove {_booster_amount} from {booster_exp}
+        delete bossbar named "event"
+    else if {_i} = 3:
+        set {_booster_amount} to 0.5
+        add {_booster_amount} to {booster_money}
+        set {_bar} to boss bar named "event" with title "&8[&a&lEVENTS&8] &7▪ &f%{_booster_amount}+1%x Money Booster" with color lime with progress 100
+        set bossbar players of {_bar} to all players
+        broadcast "", "{@prefix} A new event has started!", " &f☞ %{_booster_amount}+1%x Money Booster is live!", "&7&oEnds in 15 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 10 minutes
+        broadcast "", "{@prefix} Event Reminder!", " &f☞ %{_booster_amount}+1%x Money Booster is live!", "&7&oEnds in 5 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 4 minutes
+        broadcast "", "{@prefix} Event Reminder!", " &f☞ %{_booster_amount}+1%x Money Booster is live!", "&7&oEnds in 1 minute!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        wait 1 minute
+        broadcast "", "{@prefix} Event Over!", " &f☞ %{_booster_amount}+1%x Money Booster event has concluded!", "&7&oCome back in 45 minutes!", ""
+        play sound "block.note_block.pling" with pitch 0.8 to all players
+        remove {_booster_amount} from {booster_money}
+        delete bossbar named "event"
+
+every 1 hour:
+    get_Random_Event()

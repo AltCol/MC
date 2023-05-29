@@ -1,0 +1,154 @@
+# crates #
+
+options: 
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+command /crate <text> <text> <player> <number>:
+    permission: console
+    permission: op
+    trigger:
+        arg-1 is "add"
+        add arg-4 to {crates::%arg-2%::%uuid of arg-3%}
+
+function crates_Open(p: player, crate: text, n: number):
+    set {_opened} to 0
+    if {_crate} = "common":
+        loop {_n} times:
+            set {_i} to (random integer between 0 and 100)
+            if {_i} is between 100 and 50:
+                execute console command "addmoons %{_p}% 1000"
+                send "{@prefix} +1k Tokens" to {_p}
+            else if {_i} is between 49 and 20:
+                execute console command "givegen %{_p}% 4 1"
+                send "{@prefix} Tier 4 Gen" to {_p}
+            else if {_i} is between 19 and 5:
+                execute console command "addmoons %{_p}% 2500"
+                send "{@prefix} +2.5k Tokens" to {_p}
+            else if {_i} is 4 or 3 or 2:
+                execute console command "givegen %{_p}% 5 1"
+                send "{@prefix} Tier 5 Gen" to {_p}
+            else if {_i} is 1:
+                execute console command "genslots add %{_p}% 1"
+                send "{@prefix} 1 Gen Slot" to {_p}
+            remove 1 from {crates::common::%uuid of {_p}%}
+    else if {_crate} = "rare":
+        loop {_n} times:
+            set {_i} to (random integer between 0 and 100)
+            if {_i} is between 100 and 50:
+                execute console command "addmoons %{_p}% 5000"
+                send "{@prefix} +5k Tokens" to {_p}
+            else if {_i} is between 49 and 20:
+                execute console command "givegen %{_p}% 6 1"
+                send "{@prefix} Tier 6 Gen" to {_p}
+            else if {_i} is between 19 and 5:
+                execute console command "addmoons %{_p}% 7500"
+                send "{@prefix} +7.5k Tokens" to {_p}
+            else if {_i} is 4 or 3 or 2:
+                execute console command "givegen %{_p}% 7 1"
+                send "{@prefix} Tier 7 Gen" to {_p}
+            else if {_i} is 1:
+                execute console command "genslots add %{_p}% 2"
+                send "{@prefix} 2 Gen Slots" to {_p}
+            remove 1 from {crates::rare::%uuid of {_p}%}
+    else if {_crate} = "legend":
+        loop {_n} times:
+            set {_i} to (random integer between 0 and 100)
+            if {_i} is between 100 and 50:
+                execute console command "addmoons %{_p}% 15000"
+                send "{@prefix} +15k Tokens" to {_p}
+            else if {_i} is between 49 and 20:
+                execute console command "givegen %{_p}% 8 1"
+                send "{@prefix} Tier 8 Gen" to {_p}
+            else if {_i} is between 19 and 5:
+                execute console command "addmoons %{_p}% 25000"
+                send "{@prefix} +25k Tokens" to {_p}
+            else if {_i} is 4 or 3 or 2:
+                execute console command "givegen %{_p}% 9 1"
+                send "{@prefix} Tier 9 Gen" to {_p}
+            else if {_i} is 1:
+                execute console command "genslots add %{_p}% 5"
+                send "{@prefix} 5 Gen Slots" to {_p}
+            remove 1 from {crates::legend::%uuid of {_p}%}
+
+function crates_Gui(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Crates Menu":
+        make gui slot (all integers between 0 and 26) with black stained glass pane named "&7" 
+        
+        make gui slot 11 with grey dye named "&7&lCOMMON CRATE" with lore ("&8Crate", "", " &7&l| &fYou have &a&n%format({crates::common::%uuid of {_p}%}+0)%&r &fof", " &7&l| &fthis key stored!", "", "&8&oPress Q to mass open, left click to open 1", "&8&oMass open requies VIP rank or higher!"):
+            if "%click type%" contains "Drop":
+                if ({crates::common::%uuid of {_p}%}+0) = 0:
+                    close inventory of {_p}
+                    send "{@prefix} You don't have any more keys!" to {_p}
+                    stop
+                else if {_p} doesn't have permission "moon.keys":
+                    close inventory of {_p}
+                    send "{@prefix} You can't mass open!" to {_p}
+                    stop                    
+                set {_crateamount} to {crates::common::%uuid of {_p}%}
+                if {_crateamount} >= 25:
+                    crates_Open({_p}, "common", 25)
+                else:
+                    set {_open} to {crates::common::%uuid of {_p}%}
+                    crates_Open({_p}, "common", {_open})
+                crates_Gui({_p})
+            else if "%click type%" contains "Left":
+                if {crates::common::%uuid of {_p}%}+0 = 0:
+                    close inventory of {_p}
+                    send "{@prefix} You don't have any more keys!" to {_p}
+                    stop
+                crates_Open({_p}, "common", 1)
+                crates_Gui({_p})
+        make gui slot 13 with blue dye named "&b&lRARE CRATE" with lore ("&8Crate", "", " &7&l| &fYou have &a&n%format({crates::rare::%uuid of {_p}%}+0)%&r &fof", " &7&l| &fthis key stored!", "", "&8&oPress Q to mass open, left click to open 1", "&8&oMass open requies VIP rank or higher!"):
+            if "%click type%" contains "Drop":
+                if ({crates::rare::%uuid of {_p}%}+0) = 0:
+                    close inventory of {_p}
+                    send "{@prefix} You don't have any more keys!" to {_p}
+                    stop
+                else if {_p} doesn't have permission "moon.keys":
+                    close inventory of {_p}
+                    send "{@prefix} You can't mass open!" to {_p}
+                    stop   
+                set {_crateamount} to {crates::rare::%uuid of {_p}%}
+                if {_crateamount} >= 25:
+                    crates_Open({_p}, "rare", 25)
+                else:
+                    set {_open} to {crates::rare::%uuid of {_p}%}
+                    crates_Open({_p}, "rare", {_open})
+                crates_Gui({_p})
+            else if "%click type%" contains "Left":
+                if {crates::rare::%uuid of {_p}%}+0 = 0:
+                    close inventory of {_p}
+                    send "{@prefix} You don't have any more keys!" to {_p}
+                    stop
+                crates_Open({_p}, "rare", 1)
+                crates_Gui({_p})
+        make gui slot 15 with orange dye named "&6&lLEGEND CRATE" with lore ("&8Crate", "", " &7&l| &fYou have &a&n%format({crates::legend::%uuid of {_p}%}+0)%&r &fof", " &7&l| &fthis key stored!", "", "&8&oPress Q to mass open, left click to open 1", "&8&oMass open requies VIP rank or higher!"):
+            if "%click type%" contains "Drop":
+                if ({crates::legend::%uuid of {_p}%}+0) = 0:
+                    close inventory of {_p}
+                    send "{@prefix} You don't have any more keys!" to {_p}
+                    stop
+                else if {_p} doesn't have permission "moon.keys":
+                    close inventory of {_p}
+                    send "{@prefix} You can't mass open!" to {_p}
+                    stop   
+                set {_crateamount} to {crates::legend::%uuid of {_p}%}
+                if {_crateamount} >= 25:
+                    crates_Open({_p}, "legend", 25)
+                else:
+                    set {_open} to {crates::legend::%uuid of {_p}%}
+                    crates_Open({_p}, "legend", {_open})
+                crates_Gui({_p})
+            else if "%click type%" contains "Left":
+                if {crates::legend::%uuid of {_p}%}+0 = 0:
+                    close inventory of {_p}
+                    send "{@prefix} You don't have any more keys!" to {_p}
+                    stop
+                crates_Open({_p}, "legend", 1)
+                crates_Gui({_p})
+    open last gui to {_p}                
+
+command /crates:
+    aliases: /keys, /key, /crate
+    trigger:
+        crates_Gui(player)

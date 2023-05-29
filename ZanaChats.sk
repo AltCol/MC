@@ -1,0 +1,4 @@
+# chat #
+
+on chat:
+    set chat format to " &8• &f%colored player's prefix%%player%%{tags::%uuid of player%} ? ""% &8➜ %{chatcolor::%uuid of player%} ? "&7"%%message%"

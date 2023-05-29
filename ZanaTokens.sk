@@ -1,0 +1,43 @@
+# tokenshop #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+function token_Gui(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Token Shop":
+        loop 14 times:
+            make next gui slot with lime glass pane named "&7" 
+            make next gui slot with white stained glass pane named "&7"
+        make gui slot 10 with blaze rod named "&a₪ &fSellwand &8[&f1x&8] &a₪" with lore ("&8Sellwand", "", " &f▶ &aCost &e%fontimage "fonts:star_icon"%&e500k", "") with all flags hidden:
+            if {tokens::%uuid of {_p}%}+0 >= 500000:
+                remove 500000 from {tokens::%uuid of {_p}%}
+                execute console command "sellwandgive %{_p}% 1"
+                send "{@prefix} Purchased 1x Sellwand" to {_p}
+                close inventory of {_p}
+        make gui slot 11 with blaze rod named "&a₪ &fSellwand &8[&f1.5x&8] &a₪" with lore ("&8Sellwand", "", " &f▶ &aCost &e%fontimage "fonts:star_icon"%&e1.25M", "") with all flags hidden:
+            if {tokens::%uuid of {_p}%}+0 >= 1250000:
+                remove 1250000 from {tokens::%uuid of {_p}%}
+                execute console command "sellwandgive %{_p}% 1.5"
+                send "{@prefix} Purchased 1.5x Sellwand" to {_p}
+                close inventory of {_p} 
+        make gui slot 12 with gray dye named "&7❤ &7&lCOMMON KEY &7❤" with lore ("&8Crate Key", "", " &f▶ &aCost &e%fontimage "fonts:star_icon"%&e5k", "") with all flags hidden:
+            if {tokens::%uuid of {_p}%}+0 >= 5000:
+                remove 5000 from {tokens::%uuid of {_p}%}
+                execute console command "crate add common %{_p}% 1"
+                send "{@prefix} Purchased 1x Common Key" to {_p}
+        make gui slot 13 with light blue dye named "&b❤ &b&lRARE KEY &b❤" with lore ("&8Crate Key", "", " &f▶ &aCost &e%fontimage "fonts:star_icon"%&e25k", "") with all flags hidden:
+            if {tokens::%uuid of {_p}%}+0 >= 25000:
+                remove 25000 from {tokens::%uuid of {_p}%}
+                execute console command "crate add rare %{_p}% 1"
+                send "{@prefix} Purchased 1x Rare Key" to {_p}  
+        make gui slot 14 with orange dye named "&6❤ &6&lLEGENDARY KEY &6❤" with lore ("&8Crate Key", "", " &f▶ &aCost &e%fontimage "fonts:star_icon"%&e100k", "") with all flags hidden:
+            if {tokens::%uuid of {_p}%}+0 >= 100000:
+                remove 100000 from {tokens::%uuid of {_p}%}
+                execute console command "crate add legend %{_p}% 1"
+                send "{@prefix} Purchased 1x Legendary Key" to {_p}
+    open last gui to {_p} 
+
+command /tokenshop:
+    aliases: /tshop, /tokens
+    trigger:
+        token_Gui(player)    

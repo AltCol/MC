@@ -1,0 +1,74 @@
+# Boosters #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+function give_Booster(p: player, t: timespan, ty: text, m: number):
+    if {_ty} = "money":
+        set {_item} to glowing emerald named "&2₪&a₪&f₪ &a&lMONEY BOOSTER &f₪&a₪&2₪" with lore ("&8ʙᴏᴏsᴛᴇʀ ɪᴛᴇᴍ", "", " &a&l▎ &fBooster Multi: +%{_m}%x", "", "&7ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴛɪᴠᴀᴛᴇ")
+        set double tag "multi" of nbt of {_item} to {_m}
+        set string tag "type" of nbt of {_item} to "money"
+        set string tag "length" of nbt of {_item} to "%{_t}%"
+        give {_p} 1 of {_item}
+    else if {_ty} = "tokens":
+        set {_item} to glowing sunflower named "&6₪&e₪&f₪ &e&lTOKENS BOOSTER &f₪&e₪&6₪" with lore ("&8ʙᴏᴏsᴛᴇʀ ɪᴛᴇᴍ", "", " &e&l▎ &fBooster Multi: +%{_m}%x", "", "&7ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴛɪᴠᴀᴛᴇ")
+        set double tag "multi" of nbt of {_item} to {_m}
+        set string tag "type" of nbt of {_item} to "tokens"
+        set string tag "length" of nbt of {_item} to "%{_t}%"
+        give {_p} 1 of {_item}
+    else if {_ty} = "xp":
+        set {_item} to glowing diamond named "&3₪&b₪&f₪ &b&lEXP BOOSTER &f₪&b₪&3₪" with lore ("&8ʙᴏᴏsᴛᴇʀ ɪᴛᴇᴍ", "", " &b&l▎ &fBooster Multi: +%{_m}%x", "", "&7ʀɪɢʜᴛ ᴄʟɪᴄᴋ ᴛᴏ ᴀᴄᴛɪᴠᴀᴛᴇ")
+        set double tag "multi" of nbt of {_item} to {_m}
+        set string tag "type" of nbt of {_item} to "xp"
+        set string tag "length" of nbt of {_item} to "%{_t}%"
+        give {_p} 1 of {_item}
+
+
+command /admin_booster <player> <timespan> <text> <number>:
+    permission: op
+    trigger:
+        give_Booster(arg-1, arg-2, arg-3, arg-4)
+        send "{@prefix} Sent over a booster to %arg-1%" to sender
+        send "{@prefix} Send a booster from %sender%" to arg-1
+
+on right click with emerald or sunflower or diamond:
+    name of player's tool contains "₪"
+    if string tag "type" of nbt of player's tool = "money":
+        set {_multi} to double tag "multi" of nbt of player's tool
+        set {_length} to string tag "length" of nbt of player's tool
+        remove 1 of player's tool from player's inventory
+        add {_multi} to {booster_money}
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Money buff has been applied for %{_length}%! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 45 minutes
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Money buff will expire in 15 minutes! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 10 minutes
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Money buff will expire in 5 minutes! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 5 minutes
+        remove {_multi} from {booster_money}
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Money buff has expired! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+    else if string tag "type" of nbt of player's tool = "tokens":
+        set {_multi} to double tag "multi" of nbt of player's tool
+        set {_length} to string tag "length" of nbt of player's tool
+        remove 1 of player's tool from player's inventory
+        add {_multi} to {booster_tokens}
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Tokens buff has been applied for %{_length}%! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 45 minutes
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Tokens buff will expire in 15 minutes! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 10 minutes
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Tokens buff will expire in 5 minutes! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 5 minutes
+        remove {_multi} from {booster_tokens}
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x Tokens buff has expired! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+    else if string tag "type" of nbt of player's tool = "xp":
+        set {_multi} to double tag "multi" of nbt of player's tool
+        set {_length} to string tag "length" of nbt of player's tool
+        remove 1 of player's tool from player's inventory
+        add {_multi} to {booster_exp}
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x EXP buff has been applied for %{_length}%! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 45 minutes
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x EXP buff will expire in 15 minutes! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 10 minutes
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x EXP buff will expire in 5 minutes! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""
+        wait 5 minutes
+        remove {_multi} from {booster_exp}
+        broadcast "", "%fontimage "fonts:broadcast_tag"%", "&f■ &aA +%{_multi}%x EXP buff has expired! &8(&f%{_multi}+1%x&8)", "&f■ &7Thank %player% for this boost!", ""

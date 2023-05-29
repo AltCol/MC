@@ -1,0 +1,211 @@
+# mining #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+command /mine:
+    aliases: /mtp
+    trigger:
+        teleport player to {mine}
+
+on first join:
+    set {mining::needed_xp::%uuid of player%} to 50
+    set {mining::xp::%uuid of player%} to 0
+    set {mining::level::%uuid of player%} to 0
+
+function give_Pick(p: player):
+    set {_rod} to diamond pickaxe named "&2⛏&a⛏&f⛏ &a&lBLOCK BUSTER &f⛏&a⛏&2⛏" with lore ("&8Mining Tool", "", " &f→ &aSpeedy 0", " &f→ &aVein Miner 0", " &f→ &aBlock Boom 0", " &f→ &aCrate Buster 0", " &f→ &aHacked 0", "", "&7Visit the Mining Station") with all flags hidden
+    enchant {_rod} with efficiency 5
+    give {_p} 1 of {_rod}
+    
+function pick_Upgrade(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Block Buster Station":
+        make gui slot (all integers between 0 and 26) with black stained glass pane named "&7" with all flags hidden
+        set {_lure} to int tag "speedy" of nbt of {_p}'s tool
+        make gui slot 11 with sugar named "&aSpeedy" with lore ("&8Enchant", "", " &f→ This enchant has the chance to", " &f→ give you a haste boost.", "", " &f→ Level &a%{_lure}%&7/&c3", "", " &f→ &fCost &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*500)%", "", "&7Click to enchant"):
+            if {_lure} >= 3:
+                send "{@prefix} You can't buy this Speedy upgrade" to {_p}
+                close inventory of {_p}
+            else if {tokens::%uuid of {_p}%}+0 >= ({_lure}+1)*500:
+                set int tag "speedy" of nbt of {_p}'s tool to ({_lure})+1
+                set line 3 of lore of {_p}'s tool to " &f→ &aSpeedy %{_lure}+1%"
+                remove (({_lure}+1)*500) from {tokens::%uuid of {_p}%}
+                close inventory of {_p}
+                send "{@prefix} You have upgraded your Speedy enchant!" to {_p}
+            else:
+                send "{@prefix} You need &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*500)% &fTokens to buy this Speedy upgrade" to {_p}
+                close inventory of {_p}
+        set {_lure} to int tag "Vein" of nbt of {_p}'s tool
+        make gui slot 12 with diamond named "&aVein Miner" with lore ("&8Enchant", "", " &f→ This enchant has the chance", " &f→ to break ores in radius!", "", " &f→ Level &a%{_lure}%&7/&c10", "", " &f→ &fCost &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*750)%", "", "&7Click to enchant"):
+            if {_lure} >= 10:
+                send "{@prefix} You can't buy this Speedy upgrade" to {_p}
+                close inventory of {_p}
+            else if {tokens::%uuid of {_p}%}+0 >= ({_lure}+1)*750:
+                set int tag "Vein" of nbt of {_p}'s tool to ({_lure})+1
+                set line 4 of lore of {_p}'s tool to " &f→ &aVein Miner %{_lure}+1%"
+                remove (({_lure}+1)*750) from {tokens::%uuid of {_p}%}
+                close inventory of {_p}
+                send "{@prefix} You have upgraded your Vein Miner enchant!" to {_p}
+            else:
+                send "{@prefix} You need &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*750)% &fTokens to buy this Vein Miner upgrade" to {_p}
+                close inventory of {_p}
+        set {_lure} to int tag "Block" of nbt of {_p}'s tool
+        make gui slot 13 with tnt named "&aBlock Boom" with lore ("&8Enchant", "", " &f→ This enchant has the chance", " &f→ to give tokens without breaking the block!", "", " &f→ Level &a%{_lure}%&7/&c15", "", " &f→ &fCost &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*250)%", "", "&7Click to enchant"):
+            if {_lure} >= 15:
+                send "{@prefix} You can't buy this Speedy upgrade" to {_p}
+                close inventory of {_p}
+            else if {tokens::%uuid of {_p}%}+0 >= ({_lure}+1)*250:
+                set int tag "Block" of nbt of {_p}'s tool to ({_lure})+1
+                set line 5 of lore of {_p}'s tool to " &f→ &aBlock Boom %{_lure}+1%"
+                remove (({_lure}+1)*250) from {tokens::%uuid of {_p}%}
+                close inventory of {_p}
+                send "{@prefix} You have upgraded your Block Boom enchant!" to {_p}
+            else:
+                send "{@prefix} You need &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*250)% &fTokens to buy this Block Boom upgrade" to {_p}
+                close inventory of {_p}
+        set {_lure} to int tag "crate" of nbt of {_p}'s tool
+        make gui slot 14 with tripwire hook named "&aCrate Buster" with lore ("&8Enchant", "", " &f→ This enchant has the chance", " &f→ to gain keys while mining.", "", " &f→ Level &a%{_lure}%&7/&c20", "", " &f→ &fCost &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*500)%", "", "&7Click to enchant"):
+            if {_lure} >= 20:
+                send "{@prefix} You can't buy this Crate Buster upgrade" to {_p}
+                close inventory of {_p}
+            else if {tokens::%uuid of {_p}%}+0 >= ({_lure}+1)*500:
+                set int tag "crate" of nbt of {_p}'s tool to ({_lure})+1
+                set line 6 of lore of {_p}'s tool to " &f→ &aCrate Buster %{_lure}+1%"
+                remove (({_lure}+1)*500) from {tokens::%uuid of {_p}%}
+                close inventory of {_p}
+                send "{@prefix} You have upgraded your Crate Buster enchant!" to {_p}
+            else:
+                send "{@prefix} You need &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*500)% &fTokens to buy this Crate Buster upgrade" to {_p}
+                close inventory of {_p}
+        set {_lure} to int tag "hacked" of nbt of {_p}'s tool
+        make gui slot 15 with end portal frame named "&aHacked" with lore ("&8Enchant", "", " &f→ This enchant has the chance", " &f→ to give tokens while mining.", "", " &f→ Level &a%{_lure}%&7/&c10", "", " &f→ &fCost &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*200)%", "", "&7Click to enchant"):
+            if {_lure} >= 10:
+                send "{@prefix} You can't buy this Hacked upgrade" to {_p}
+                close inventory of {_p}
+            else if {tokens::%uuid of {_p}%}+0 >= ({_lure}+1)*200:
+                set int tag "hacked" of nbt of {_p}'s tool to ({_lure})+1
+                set line 7 of lore of {_p}'s tool to " &f→ &aHacked %{_lure}+1%"
+                remove (({_lure}+1)*200) from {tokens::%uuid of {_p}%}
+                close inventory of {_p}
+                send "{@prefix} You have upgraded your Hacked enchant!" to {_p}
+            else:
+                send "{@prefix} You need &e%fontimage "fonts:star_icon"%&e%format(({_lure}+1)*200)% &fTokens to buy this Hacked upgrade" to {_p}
+                close inventory of {_p}
+    open last gui to {_p}
+
+function level_Check_M(p: player):
+    if {mining::xp::%uuid of {_p}%} >= ({mining::needed_xp::%uuid of {_p}%}):
+        add 50 to {mining::needed_xp::%uuid of {_p}%}
+        set {mining::xp::%uuid of {_p}%} to 0
+        send title "&2☝&a☝&f☝ LEVEL-UP! &f☝&a☝&2☝" with subtitle "%fontimage "fonts:diamond_icon"%&c%{mining::level::%uuid of {_p}%}+0% &7to %fontimage "fonts:diamond_icon"%&a%{mining::level::%uuid of {_p}%}+1%" to {_p}
+        add 1 to {mining::level::%uuid of {_p}%}
+        if mod({mining::level::%uuid of {_p}%}, 5) = 0:
+            add 1 to {-gen::placed::%{_p}%}
+        play sound "ui.toast.challenge_complete" with volume 0.5 to {_p}
+    else:
+        set {_needed_xp} to {mining::needed_xp::%uuid of {_p}%}
+        set {_xp} to {mining::xp::%uuid of {_p}%}+0
+        send action bar "&8[ &a%{_xp}%&7/&a%{_needed_xp}% &8]" to {_p}
+
+on break of coal ore or iron ore or gold ore or diamond ore or emerald ore or ancient debris:
+    world = "SkyLand"
+    name of player's tool contains "⛏"
+    clear drops
+    set {_block} to type of event-block
+    set {_hacked} to int tag "hacked" of nbt of player's tool
+    set {_crate} to int tag "crate" of nbt of player's tool
+    set {_Block1} to int tag "Block" of nbt of player's tool
+    set {_Vein} to int tag "Vein" of nbt of player's tool
+    set {_speedy} to int tag "speedy" of nbt of player's tool
+    if chance of ({_speedy}/3)%:
+        apply haste 2 to player for 5 seconds
+        send "{@prefix} Speedy activated!" to player
+    else if chance of ({_hacked}/2.5)%:
+        set {_token} to (random integer between 500 and 1750)
+        add {_token} to {tokens::%uuid of player%}
+        chance of 25%:
+            send "{@prefix} Hacking pays off sometimes for &e%fontimage "fonts:star_icon"%&e%{_token}%" to player
+    else if chance of ({_Vein}/25)%:
+        loop blocks in radius 3 of event-block:
+            if type of loop-block = coal ore:
+                add (0.1 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+                add (random number between 1 and 5) * {booster_tokens} to {tokens::%uuid of player%}
+            else if type of loop-block = iron ore:
+                add (0.25 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+                add (random number between 3 and 8) * {booster_tokens} to {tokens::%uuid of player%}
+            else if type of loop-block = gold ore:
+                add (0.5 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+                add (random number between 8 and 14) * {booster_tokens} to {tokens::%uuid of player%}
+            else if type of loop-block = diamond ore:
+                add (0.8 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+                add (random number between 11 and 17) * {booster_tokens} to {tokens::%uuid of player%}
+            else if type of loop-block = emerald ore:
+                add (1.1 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+                add (random number between 15 and 25) * {booster_tokens} to {tokens::%uuid of player%}
+            else if type of loop-block = ancient debris:
+                add (1.5 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+                add (random number between 17 and 27) * {booster_tokens} to {tokens::%uuid of player%}
+        send title "&a&l⛏⛏⛏ &f&lVEIN HAS BEEN MINED &a&l⛏⛏⛏" with subtitle "&7Broke the blocks in radius 3!" to player
+    else if chance of ({_Block1}/3)%:
+        set event-block to {_block}
+        send "{@prefix} A Block Boom just gave back the block!" to player
+    else if chance of ({_crate}/40)%:
+        set {_crate} to "common"
+        execute console command "crate add %{_crate}% %player% 1"
+        send "{@prefix} You have broken the crate wide open!" to player
+    if {mining_luck::%uuid of player%} is set: 
+        chance of 1%:
+            give player 1 of glowing large amethyst bud named "&5₪&d₪&f₪ &d&lSHINY CRYSTAL &f₪&d₪&5₪" with lore ("&8Mining Drop", "", " &f→ Sell for &2$&a75k", "")
+    if {quest::current::%uuid of player%} is "Mine 5 coal and 3 diamonds":
+        set {_drop_coal} to 1
+        set {_drop_diamond} to 1
+        set {_coal_amount} to amount of coal in inventory of player
+        set {_diamond_amount} to amount of diamond in inventory of player
+        if {_coal_amount} = 5:
+            set {_drop_coal} to 0
+        if {_diamond_amount} = 3:
+            set {_drop_diamond} to 0
+        if type of event-block = coal ore:
+            give player {_drop_coal} of coal named "&8&lMINER'S COAL" with lore ("", " &f▶ &aQuest Item", "")
+        else If type of event-block = diamond ore:
+            give player {_drop_diamond} of diamond named "&b&lMINER'S DIAMOND" with lore ("", " &f▶ &aQuest Item", "")
+        set {_coal_amount} to amount of coal in inventory of player
+        set {_diamond_amount} to amount of diamond in inventory of player
+        if {_coal_amount} = 5:
+            if {_diamond_amount} = 3:
+                send title "&a&lOBJECTIVE UPDATED" with subtitle "&fGive the miner his goods!" to player
+                set {quest::current::%uuid of player%} to "Give the 5 coal and 3 diamonds" 
+    if type of event-block = coal ore:
+        add (0.1 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+        add (random number between 1 and 5) * {booster_tokens} to {tokens::%uuid of player%}
+    else if type of event-block = iron ore:
+        add (0.25 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+        add (random number between 3 and 8) * {booster_tokens} to {tokens::%uuid of player%}
+    else if type of event-block = gold ore:
+        add (0.5 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+        add (random number between 8 and 14) * {booster_tokens} to {tokens::%uuid of player%}
+    else if type of event-block = diamond ore:
+        add (0.8 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+        add (random number between 11 and 17) * {booster_tokens} to {tokens::%uuid of player%}
+    else if type of event-block = emerald ore:
+        add (1.1 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+        add (random number between 15 and 25) * {booster_tokens} to {tokens::%uuid of player%}
+    else if type of event-block = ancient debris:
+        add (1.5 * {booster_exp} * ({pets::booster_XP::%uuid of player%}+1)) to {mining::xp::%uuid of player%}
+        add (random number between 17 and 27) * {booster_tokens} to {tokens::%uuid of player%}
+    level_Check_M(player)
+    set event-block to bedrock
+    wait 5 seconds
+    set location of event-block to {_block}
+
+on right click on anvil:
+	cancel event
+	name of player's tool contains "⛏"
+	location of event-block is {pick_upgrade}
+	pick_Upgrade(player)
+
+command /set_loc <string>:
+    permission: op
+    trigger:
+        set {%arg-1%} to location of target block
+        send "{@prefix} Set var %arg-1% to location of target block!"

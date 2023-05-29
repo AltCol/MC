@@ -1,0 +1,58 @@
+# PartyBlocks Shovels #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+command /admin_shovel [<player>]:
+    permission: op
+    trigger:
+        set {_shovel} to netherite shovel named "&2☃&a☃&f☃ &aShoveler &f☃&a☃&2☃" with lore ("&8Farming Shovel", "", " &a→&f Farm the lawn with this shovel!", "", "&a> &f/forge to upgrade! &a<") with all flags hidden
+        set int tag "level" of nbt of {_shovel} to 1
+        set double tag "xp" of nbt of {_shovel} to 0
+        set double tag "needed_xp" of nbt of {_shovel} to 50
+        enchant {_shovel} with efficiency 10
+        give arg-1 1 of {_shovel}
+
+on break of grass block:
+    world is "SkyLand"
+    name of player's tool contains "☃"
+    set {_tokens} to (random number between 0.1 and 0.7)*(int tag "level" of nbt of player's tool)*{booster_tokens}
+    add {_tokens} to {tokens::%uuid of player%}
+    set {_xp} to (random number between 0.1 and 1)
+    set double tag "xp" of nbt of player's tool to (double tag "xp" of nbt of player's tool)+{_xp}
+    if double tag "xp" of nbt of player's tool >= double tag "needed_xp" of nbt of player's tool:
+        set int tag "level" of nbt of player's tool to (int tag "level" of nbt of player's tool)+1
+        set double tag "xp" of nbt of player's tool to 0
+        set double tag "needed_xp" of nbt of player's tool to (50*(int tag "level" of nbt of player's tool))
+        send title "&2☃&a☃&f☃ &a&lTOOL LEVEL UP &f☃&a☃&2☃" with subtitle "&7Tool level is now %(int tag "level" of nbt of player's tool)%!" to player
+    send action bar "&8(( &aGrass Broken for %fontimage "fonts:star_icon"%&e%{_tokens}%&a and &e%{_xp}% XP&a! &8))" to player
+    set event-block to bedrock
+    clear drops
+    wait 5 seconds
+    set event-block to grass block
+
+function shovel_GUI(p: player):
+    set {_cost} to 2500*(int tag "level" of nbt of {_p}'s tool)
+    create a gui with virtual dropper inventory named "Shoveler Upgrade":
+        make gui slot (all integers between 0 and 8) with black stained glass pane named "&7" with all flags hidden
+        make gui slot 4 with glowing netherite shovel named "&2☃&a☃&f☃ &aShoveler &f☃&a☃&2☃" with lore ("&8Farming Tool Upgrade", "", " &a&l▎ &fCost: %fontimage "fonts:star_icon"%&e%format({_cost})%", "", "&a> &7Click to gain 1 level &a<"):
+            if {tokens::%uuid of {_p}%}+0 >= {_cost}:
+                remove {_cost} from {tokens::%uuid of {_p}%}
+                set int tag "level" of nbt of {_p}'s tool to (int tag "level" of nbt of {_p}'s tool)+1
+                set double tag "xp" of nbt of {_p}'s tool to 0
+                set double tag "needed_xp" of nbt of {_p}'s tool to (50*(int tag "level" of nbt of {_p}'s tool))
+                close inventory of {_p}
+                send "{@prefix} Gained +1 level on your shovel!" to {_p}
+            else:
+                close inventory of {_p}
+                send "{@prefix} Not enough tokens to upgrade!" to {_p}
+    open last gui to {_p}
+
+on right click on anvil:
+    name of player's tool contains "☃"
+    event-location = {shovel_station}
+    shovel_GUI(player)
+
+command /forge:
+    trigger:
+        teleport player to {forge}

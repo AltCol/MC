@@ -1,0 +1,57 @@
+# Skills #
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+function skills_GUI(p: player):
+    create a gui with virtual chest inventory with 3 rows named "Skills Menu":
+        make gui slot (all integers between 0 and 26) with black stained glass pane named "&7" 
+
+        make gui slot 11 with chain named "&7&lCAST IRON ROD" with lore ("&8ғɪsʜɪɴɢ sᴋɪʟʟ", "", " &7&l▎ &fAccess to Iron Rod Ability", " &7&l▎ &fCatch plated fish with this!", "", " &7&l▎ &fPrice: %fontimage "fonts:star_icon"%&e100,000", "", "&7ᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀsᴇ"):
+            if {fishing_iron_rod::%uuid of {_p}%} is not set:
+                if {tokens::%uuid of {_p}%}+0 >= 100000:
+                    remove 100000 from {tokens::%uuid of {_p}%}
+                    set {fishing_iron_rod::%uuid of {_p}%} to true
+                    send "{@prefix} Purchased the Cast Iron Rod Skill" to {_p}
+                    close inventory of {_p}
+                else:
+                    send "{@prefix} You can't purchase this skill!" to {_p}
+                    close inventory of {_p}
+        
+        make gui slot 12 with sugar named "&a&lBURST" with lore ("&8ғᴀʀᴍɪɴɢ sᴋɪʟʟ", "", " &a&l▎ &fAccess to the Burst Ability", " &a&l▎ &fSpeedy farming unlocked!", "", " &a&l▎ &fPrice: %fontimage "fonts:star_icon"%&e100,000", "", "&7ᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀsᴇ"):
+            if {farming_burst::%uuid of {_p}%} is not set:
+                if {tokens::%uuid of {_p}%}+0 >= 100000:
+                    remove 100000 from {tokens::%uuid of {_p}%}
+                    set {farming_burst::%uuid of {_p}%} to true
+                    set {brust::%uuid of {_p}%} to now
+                    send "{@prefix} Purchased the Burst Skill" to {_p}
+                    close inventory of {_p}
+                else:
+                    send "{@prefix} You can't purchase this skill!" to {_p}
+                    close inventory of {_p}
+        make gui slot 14 with diamond named "&b&lLUCK MASTER" with lore ("&8ᴍɪɴɪɴɢ sᴋɪʟʟ", "", " &b&l▎ &fAccess to the Luck Ability", " &b&l▎ &fGrant Crystals while Mining!", "", " &b&l▎ &fPrice: %fontimage "fonts:star_icon"%&e100,000", "", "&7ᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀsᴇ"):
+            if {mining_luck::%uuid of {_p}%} is not set:
+                if {tokens::%uuid of {_p}%}+0 >= 100000:
+                    remove 100000 from {tokens::%uuid of {_p}%}
+                    set {mining_luck::%uuid of {_p}%} to true
+                    send "{@prefix} Purchased the Luck Master Skill" to {_p}
+                    close inventory of {_p}
+                else:
+                    send "{@prefix} You can't purchase this skill!" to {_p}
+                    close inventory of {_p}
+        make gui slot 15 with warped fungus named "&6&lWARPED" with lore ("&8ғᴏʀᴀɢɪɴɢ sᴋɪʟʟ", "", " &6&l▎ &fAccess to the Warped Ability", " &6&l▎ &fChance for warped logs!", "", " &6&l▎ &fPrice: %fontimage "fonts:star_icon"%&e100,000", "", "&7ᴄʟɪᴄᴋ ᴛᴏ ᴘᴜʀᴄʜᴀsᴇ"):
+            if {foraging_warped::%uuid of {_p}%} is not set:
+                if {tokens::%uuid of {_p}%}+0 >= 100000:
+                    remove 100000 from {tokens::%uuid of {_p}%}
+                    set {foraging_warped::%uuid of {_p}%} to true
+                    send "{@prefix} Purchased the Warped Skill" to {_p}
+                    close inventory of {_p}
+                else:
+                    send "{@prefix} You can't purchase this skill!" to {_p}
+                    close inventory of {_p}
+    open last gui to {_p}
+
+command /skills_gui <player>:
+    permission: op
+    trigger:
+        skills_GUI(arg-1)

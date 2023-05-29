@@ -1,0 +1,229 @@
+# ZOE GENS #
+
+function format(n: number) :: text:
+	add 0 to {_n}
+	set {_data} to "QT,18|Q,15|T,12|B,9|M,6|k,3"
+	loop split {_data} at "|":
+		set {_s::*} to split loop-value at ","
+		{_n} >= 10 ^ {_s::2} parsed as number
+		return "%{_n} / 10 ^ {_s::2} parsed as number%%{_s::1}%"
+	return "%{_n}%"
+
+options:
+    prefix: %fontimage "fonts:zana_tag"% &7▪&f
+
+command /admin_setslots [<player>] [<number>]:
+    permission: op
+    trigger:
+        if arg-1 and arg-2 are set:
+            set {-gens::%arg-1%} to arg-2
+            send "{@prefix} Set %arg-1%'s Placed gens to %arg-2%" to player
+        else if arg-1 is set:
+            send "{@prefix} %arg-1% has %{-gen::placed::%arg-1%}% Gens ""placed"" out of %{-gens::%arg-1%}%"
+
+command /genslots <text> <player> <number>:
+    permission: op
+    trigger:
+        if arg-1 is "add":
+            add arg-3 to {-gen::placed::%arg-2%}
+
+on join:
+    while player is online:
+        wait 15 seconds
+        drop_Items(player)
+
+function register_Gen(i: integer, stuff: text):
+    set {_stuff::*} to {_stuff} split at "||"
+    set {-1gens::%{_i}%} to {_stuff::1} parsed as item
+    set {-1gens::%{_stuff::1} parsed as item%} to {_i}
+    set {-1gens::%{_i}%::upgrade_block} to {_stuff::2} parsed as item
+    set {-1gens::%{_i}%::upgrade_price} to {_stuff::3} parsed as number
+    set {-1gens::%{_i}%::name} to colored {_stuff::4}
+    
+
+on load:
+    delete {-1gens::*}
+    register_Gen(1, "white terracotta||gray terracotta||250||&f&lWHITE")
+    register_Gen(2, "gray terracotta||black terracotta||500||&7&lGRAY")
+    register_Gen(3, "black terracotta||brown terracotta||1000||&8&lBLACK")
+    register_Gen(4, "brown terracotta||red terracotta||5000||&6&lBROWN")
+    register_Gen(5, "red terracotta||orange terracotta||25000||&c&lRED")
+    register_Gen(6, "orange terracotta||yellow terracotta||50000||&6&lORANGE")
+    register_Gen(7, "yellow terracotta||lime terracotta||100000||&e&lYELLOW")
+    register_Gen(8, "lime terracotta||green terracotta||250000||&a&lLIME")
+    register_Gen(9, "green terracotta||cyan terracotta||500000||&2&lGREEN")
+    register_Gen(10, "cyan terracotta||light blue terracotta||750000||&3&lCYAN")
+    register_Gen(11, "light blue terracotta||blue terracotta||1000000||&b&lLIGHT BLUE")
+    register_Gen(12, "blue terracotta||purple terracotta||1250000||&1&lBLUE")
+    register_Gen(13, "purple terracotta||magenta terracotta||1500000||&5&lPURPLE")
+    register_Gen(14, "magenta terracotta||pink terracotta||2000000||&d&lMAGENTA")
+    register_Gen(15, "pink terracotta||white glazed terracotta||2500000||&d&lPINK")
+    register_Gen(16, "white glazed terracotta block||gray glazed terracotta||3500000||&f&lWHITE GLAZED")
+    register_Gen(17, "gray glazed terracotta||black glazed terracotta||5000000||&7&lGRAY GLAZED")
+    register_Gen(18, "black glazed terracotta||brown glazed terracotta||7500000||&8&lBLACK GLAZED")
+    register_Gen(19, "brown glazed terracotta||red glazed terracotta||10000000||&6&lBROWN GLAZED")
+    register_Gen(20, "red glazed terracotta||orange glazed terracotta||25000000||&c&lRED GLAZED")
+    register_Gen(21, "orange glazed terracotta||yellow glazed terracotta||50000000||&6&lORANGE GLAZED")
+    register_Gen(22, "yellow glazed terracotta||lime glazed terracotta||100000000||&e&lYELLOW GLAZED")
+    register_Gen(23, "lime glazed terracotta||green glazed terracotta||250000000||&a&lLIME GLAZED")
+    register_Gen(24, "green glazed terracotta||cyan glazed terracotta||500000000||&2&lGREEN GLAZED")
+    register_Gen(25, "cyan glazed terracotta||light blue glazed terracotta||750000000||&3&lCYAN GLAZED")
+    register_Gen(26, "light blue glazed terracotta||blue glazed terracotta||1000000000||&b&lLIGHT BLUE GLAZED")
+    register_Gen(27, "blue glazed terracotta||purple glazed terracotta||2500000000||&1&lBLUE GLAZED")
+    register_Gen(28, "purple glazed terracotta||magenta glazed terracotta||5000000000||&5&lPURPLE GLAZED")
+
+every 10 minutes:
+    loop all players:
+        add 1 to {coins::%uuid of loop-player%}
+    broadcast "", "{@prefix} Everybody online has recieved 1 coin!", ""
+
+import:
+    org.bukkit.World
+    org.bukkit.Bukkit
+
+function dropables(n: number, p: player, i: item):
+    size of {-gens::%{_n}%::%{_p}%::*} > 0
+    set {_loc} to {-gens::%{_n}%::%{_p}%::%size of {-gens::%{_n}%::%{_p}%::*}%}
+    set {_loc} to location(x-coord of {_loc}, (y-coord of {_loc}+1), z-coord of {_loc})
+    {_p}.getWorld().dropItem({_loc}, size of {-gens::%{_n}%::%{_p}%::*} of {_i}).setVelocity(new Vector(0, 0, 0))
+
+function drop_Items(p: player):
+    if world of {_p} = "plots":
+        dropables(1, {_p}, white dye)
+        dropables(2, {_p}, gray dye)
+        dropables(3, {_p}, black dye)
+        dropables(4, {_p}, brown dye)
+        dropables(5, {_p}, red dye)
+        dropables(6, {_p}, orange dye)
+        dropables(7, {_p}, yellow dye)
+        dropables(8, {_p}, lime dye)
+        dropables(9, {_p}, green dye)
+        dropables(10, {_p}, cyan dye)
+        dropables(11, {_p}, light blue dye)
+        dropables(12, {_p}, blue dye)
+        dropables(13, {_p}, purple dye)
+        dropables(14, {_p}, magenta dye)
+        dropables(15, {_p}, pink dye)
+        dropables(16, {_p}, white candle)
+        dropables(17, {_p}, gray candle)
+        dropables(18, {_p}, black candle)
+        dropables(19, {_p}, brown candle)
+        dropables(20, {_p}, red candle)
+        dropables(21, {_p}, orange candle)
+        dropables(22, {_p}, yellow candle)
+        dropables(23, {_p}, lime candle)
+        dropables(24, {_p}, green candle)
+        dropables(25, {_p}, cyan candle)
+        dropables(26, {_p}, light blue candle)
+        dropables(27, {_p}, blue candle)
+        dropables(28, {_p}, purple candle)
+
+on place with priority monitor:
+    set {_block} to "%type of event-block%" parsed as item 
+    {-1gens::%{_block}%} is set
+    if offhand tool != air:
+        cancel event
+        stop
+    else if event-world is "plots":
+        set {_p} to player
+        set {_loc} to location of event-block
+        set yaw of {_loc} to 0
+        set pitch of {_loc} to 0
+        if {-gens::%player%}+0 >= {-gen::placed::%{_p}%}+0:
+            send action bar "{@prefix} Not enough Gen Slots!" to {_p}
+            cancel event
+            stop
+        else if string tag "Gens;true" of nbt of {_p}'s tool is "true":
+            if block at {_loc} = {_block}: 
+                add 1 to {-gens::% player%}
+                add {_loc} to {-gens::%{-1gens::%{_block}%}%::%player%::*}
+                add {_loc} to {-gens::locs::%player%::*}
+                send action bar "{@prefix} Generator Placed &7&o%{-gen::placed::%{_p}%} - ({-gens::%{_p}%})% remaining!" to player
+    else:
+        cancel event
+        
+
+function upgrade_Gen(p: player, loc: location, gui: boolean):
+    set {_block} to "%type of block at {_loc}%" parsed as item 
+    {-1gens::%{_block}%} is set
+    if {_gui} = false:
+        if 0 = {-gens::%{-1gens::%{_block}%}%::upgrade_price}:
+            send action bar "{@prefix} This Generator is maxed out" to {_p}
+            stop
+        else if {balance::%uuid of {_p}%}+0 >= {-gens::%{-1gens::%{_block}%}%::upgrade_price}:
+            remove {-gens::%{-1gens::%{_block}%}%::upgrade_price} from {balance::%uuid of {_p}%}
+            remove {_loc} from {-gens::%{-1gens::%{_block}%}%::%{_p}%::*}
+            add {_loc} to {-gens::%{-1gens::%{_block}%}+1%::%{_p}%::*}
+            set block at {_loc} to {-gens::%{-1gens::%{_block}%}%::upgrade_block}
+            send action bar "{@prefix} Generator Upgraded! &7&oNow tier %{-1gens::%{_block}%}+1%" to {_p}
+        else:
+            send "{@prefix} You need %fontimage "fonts:dollar_icon"%&a%format({-gens::%{-gens::%{_block}%}%::upgrade_price})% &fto afford this!" to {_p}
+
+command /givegen <player> <number> <number>:
+    permission: op
+    trigger:
+        set {_gen} to {-1gens::%arg-2%} named "%{-1gens::%arg-2%::name}% &fGenerator" with lore ("&8Gen Facotory", "", "&2Ⓓ &a&lDescription", " &a「 &fPlace me down to generate", " &a「 &fitems worth money!", "", "&2Ⓘ &a&lInformation", " &a「 &fUpgrade: %fontimage "fonts:dollar_icon"%&a%format({-1gens::%arg-2%::upgrade_price})%", " &a「 &fTier: &a%{-gens::%{-1gens::%arg-2%}%}%", "", "&a> &7Place at your plot &a<") with all flags hidden
+        set string tag "Gens;true" of nbt of {_gen} to "true"
+        give arg-1 arg-3 of {_gen}
+
+on break:
+    set {_block} to "%type of event-block%" parsed as item 
+    {-1gens::%{_block}%} is set
+    cancel event
+
+on left click:
+    set {_p} to player
+    set {_loc} to location of event-block
+    set {_block} to "%type of event-block%" parsed as item
+    {-1gens::%{_block}%} is set
+    set yaw of {_loc} to 0
+    set pitch of {_loc} to 0
+    if {-gens::locs::%player%::*} does not contain {_loc}:
+        send action bar "{@prefix} This is not your gen!" to {_p}
+        stop
+    else:
+        set {_block} to "%type of event-block%" parsed as item
+        set {_num} to {-1gens::%{_block}%}
+        remove 1 from {-gens::%{_p}%}
+        remove {_loc} from {-gens::%{_num}%::%player%::*}
+        set block at {_loc} to air
+        execute console command "givegen %{_p}% %{-1gens::%{_block}%}% 1"
+        remove {_loc} from {-gens::locs::%{_p}%::*}
+        send action bar "{@prefix} Generator Removed!" to {_p}
+
+on right click:
+    set {_loc} to location of event-block
+    set yaw of {_loc} to 0
+    set pitch of {_loc} to 0
+    {-gens::locs::%player%::*} contains {_loc}
+    if player is sneaking:
+        upgrade_Gen(player, {_loc}, false)
+
+function gen_List(p: player):
+    create a gui with virtual chest inventory with 6 rows named "Gen List Menu":
+        make gui slot (all integers between 0 and 53) with black stained glass pane named "&7" 
+        set {_slot} to 10
+        loop {-1gens::*}:
+            set {_block} to {-1gens::%loop-index%}
+            make gui slot {_slot} with {_block} named "%{-1gens::%loop-index%::name}% &fGenerator" with lore ("&8Gen Facotory", "", "&2Ⓓ &a&lDescription", " &a「 &fPlace me down to generate", " &a「 &fitems worth money!", "", "&2Ⓘ &a&lInformation", " &a「 &fUpgrade: %fontimage "fonts:dollar_icon"%&a%format({-1gens::%loop-index%::upgrade_price})%", " &a「 &fTier: &a%{-1gens::%{-gens::%loop-index%}%}%", "", "&a> &7Place at your plot &a<") with all flags hidden
+            add 1 to {_slot}
+            if {_slot} = 17 or 26 or 35:
+                add 2 to {_slot}
+    open last gui to {_p}  
+
+command /genlist:
+    trigger:
+        gen_List(player)
+
+command /fix_gens <player> <integer>:
+    permission: op
+    trigger:
+        loop {-gens::%arg-2%::%arg-1%::*}:
+            send "%block at loop-value%"
+            if "%block at loop-value%" parsed as item != {-1gens::%arg-2%}:
+                remove loop-value from {-gens::%arg-2%::%arg-1%::*} and {-gens::locs::%arg-1%::*}
+                send "{@prefix} Removed Gen at %loop-value% because Block was not gen!" to player
+            else if "%block at loop-value%" parsed as item = {-1gens::%arg-2%}:
+                if {-gens::locs::%arg-1%::*} does not contain loop-value:
+                    add loop-value to {-gens::locs::%arg-1%::*}
+                    send "{@prefix} Added Gen at %loop-value% to Locations since it was not added!" to player

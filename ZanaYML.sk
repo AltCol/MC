@@ -1,0 +1,47 @@
+# Gen YML #
+
+on first join:
+	load yml "plugins/Gens/%uuid of player%.yml" as "yml-%player%"
+	set {-gen::placed::%player%} to 25
+
+on join:
+    load yml "plugins/Gens/%uuid of player%.yml" as "yml-%player%"
+    if {yaml2::%uuid of player%} is not set:
+        set {yaml2::%uuid of player%} to true
+        set {_player} to player
+        set yml value "Data.gens_slots" from "yml-%{_player}%" to {gens::%uuid of {_player}%}
+        set yml value "Data.gens_placed" from "yml-%{_player}%" to {gen::placed::%uuid of {_player}%}
+        set yml list "Data.gens_locs" from "yml-%{_player}%" to {gens::locs::%uuid of {_player}%::*}
+        loop 28 times:
+            set yml list "Data.gens_%loop-number%" from "yml-%{_player}%" to {gens::%loop-number%::%uuid of {_player}%::*}
+        save yml "yml-%{_player}%"
+        wait 3 seconds
+        delete {gens::%uuid of {_player}%}
+        delete {gen::placed::%uuid of {_player}%}
+        delete {gens::locs::%uuid of {_player}%::*}
+        loop 28 times:
+            delete {gens::%loop-number%::%uuid of {_player}%::*}
+    set {-gens::%player%} to yml value "Data.gens_slots" from "yml-%player%"
+    set {-gen::placed::%player%} to yml value "Data.gens_placed" from "yml-%player%"
+    set {-gens::locs::%player%::*} to yml list "Data.gens_locs" from "yml-%player%"
+    loop 28 times:
+        set {-gens::%loop-number%::%player%::*} to yml list "Data.gens_%loop-number%" from "yml-%player%"
+
+
+on load:
+    create new section with {_player} and store it in {-saveyml}:
+        set yml value "Data.gens_slots" from "yml-%{_player}%" to {-gens::%{_player}%}
+        set yml value "Data.gens_placed" from "yml-%{_player}%" to {-gen::placed::%{_player}%}
+        set yml list "Data.gens_locs" from "yml-%{_player}%" to {-gens::locs::%{_player}%::*}
+        loop 28 times:
+            set yml list "Data.gens_%loop-number%" from "yml-%{_player}%" to {-gens::%loop-number%::%{_player}%::*}
+        save yml "yml-%{_player}%"
+
+every 10 minutes:
+    loop all players:
+        set {_player} to loop-player
+        run section {-saveyml} async with {_player} and wait
+
+on quit:
+    run section {-saveyml} async with player and wait
+    unload yml "yml-%player%"
